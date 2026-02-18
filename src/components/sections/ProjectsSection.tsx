@@ -18,8 +18,8 @@ const projects = [
       'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
     color: 'primary' as const,
     details:
-      'Built at Alcatel-Lucent Enterprise to support Technical Support Engineers in diagnosing production switch failures. Designed a FastAPI backend to ingest multi-GB compressed log archives, extract structured datasets, and generate filtered and comparative analysis. Implemented automated parsing pipelines and interactive visualizations, significantly improving debugging speed and diagnostic accuracy.',
-    github: 'https://github.com/dynamo-pentester/WDA-TOOL.git',
+      'Built at Alcatel-Lucent Enterprise to support Technical Support Engineers in diagnosing production switch failures. Designed a FastAPI backend to ingest multi-GB compressed log archives, extract structured datasets, and generate filtered and comparative analysis. Implemented automated parsing pipelines and interactive visualizations, significantly improving debugging speed and diagnostic accuracy. Since It is an Internal tool Code is on Private Repo',
+    github: '#',
     live: '#',
   },
   {
