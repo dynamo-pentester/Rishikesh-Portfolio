@@ -7,33 +7,48 @@ interface Particle {
   size: number;
   duration: number;
   delay: number;
-  swayAmount: number;
+  swayX: number;
   rotation: number;
   opacity: number;
+  scale: number;
+  filter?: string;
 }
 
 interface FallingParticlesProps {
   imageSrc: string;
   count?: number;
-  blendMode?: 'multiply' | 'screen' | 'normal';
+  mode?: 'backend' | 'security';
 }
 
-export default function FallingParticles({ imageSrc, count = 20, blendMode = 'normal' }: FallingParticlesProps) {
+export default function FallingParticles({
+  imageSrc,
+  count = 20,
+  mode = 'backend',
+}: FallingParticlesProps) {
   const particles = useMemo<Particle[]>(() => {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
-      size: Math.random() * 20 + 14,
-      duration: Math.random() * 8 + 8,
-      delay: Math.random() * 10,
-      swayAmount: Math.random() * 60 + 20,
+      size: Math.random() * 18 + 14,                    // 14–32px
+      duration: mode === 'security'
+        ? Math.random() * 10 + 12                        // 12–22s slower
+        : Math.random() * 10 + 8,                        // 8–18s
+      delay: Math.random() * 15,
+      swayX: (Math.random() - 0.5) * 100,               // –50 to +50px
       rotation: Math.random() * 360,
-      opacity: Math.random() * 0.5 + 0.3,
+      opacity: mode === 'security' ? 0.82 : 0.72,
+      scale: Math.random() * 0.6 + 0.6,                 // 0.6–1.2
+      filter: mode === 'security'
+        ? 'drop-shadow(0 0 4px rgba(255,0,0,0.5))'
+        : undefined,
     }));
-  }, [count]);
+  }, [count, mode]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-10" style={{ height: '100%', minHeight: '100vh' }}>
+    <div
+      className="fixed inset-0 overflow-hidden pointer-events-none select-none"
+      style={{ zIndex: 10 }}
+    >
       {particles.map((p) => (
         <motion.img
           key={p.id}
@@ -42,32 +57,32 @@ export default function FallingParticles({ imageSrc, count = 20, blendMode = 'no
           className="absolute pointer-events-none select-none"
           style={{
             left: `${p.x}%`,
-            top: -40,
-            width: p.size,
-            height: p.size,
+            top: -50,
+            width: p.size * p.scale,
+            height: p.size * p.scale,
             opacity: p.opacity,
-            mixBlendMode: blendMode,
+            filter: p.filter,
           }}
           animate={{
-            y: ['0vh', '300vh'],
-            x: [0, p.swayAmount, -p.swayAmount / 2, p.swayAmount / 3, 0],
+            y: ['0px', '110vh'],
+            x: [0, p.swayX, -p.swayX * 0.6, p.swayX * 0.3, 0],
             rotate: [p.rotation, p.rotation + 360],
           }}
           transition={{
             y: {
-              duration: p.duration * 2.5,
+              duration: p.duration * 2,
               repeat: Infinity,
               delay: p.delay,
               ease: 'linear',
             },
             x: {
-              duration: p.duration * 0.8,
+              duration: p.duration * 0.9,
               repeat: Infinity,
               delay: p.delay,
               ease: 'easeInOut',
             },
             rotate: {
-              duration: p.duration * 1.5,
+              duration: p.duration * 1.4,
               repeat: Infinity,
               delay: p.delay,
               ease: 'linear',

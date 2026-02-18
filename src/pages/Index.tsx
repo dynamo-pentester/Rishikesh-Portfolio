@@ -46,8 +46,8 @@ const Index = () => {
         >
           <FallingParticles
             imageSrc={isBackend ? sakuraPetal : mapleLeaf}
-            count={30}
-            blendMode={isBackend ? 'multiply' : 'screen'}
+            count={isBackend ? 25 : 18}
+            mode={mode}
           />
         </motion.div>
       </AnimatePresence>
