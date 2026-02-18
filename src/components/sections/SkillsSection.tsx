@@ -105,27 +105,113 @@ export default function SkillsSection() {
           </div>
 
           {/* Right: Orbital visualization */}
-          <ScrollReveal delay={0.3} direction="right">
-            <div className="relative h-[400px] hidden lg:block">
-              {/* Center core */}
-              <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-br from-glow-primary/20 to-glow-secondary/20 border border-primary/30 flex items-center justify-center"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-              >
-                <span className="font-display font-bold text-lg gradient-text">Core</span>
-              </motion.div>
+          {/* Right: Systems stack visualization */}
+{/* Right: Professional orbital visualization */}
+<ScrollReveal delay={0.3} direction="right">
+  <div className="relative h-[460px] hidden lg:block">
 
-              {/* Orbit rings */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full border border-border/30" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] h-[360px] rounded-full border border-border/20" />
+    {/* Rotating orbital container */}
+    <motion.div
+      className="absolute inset-0"
+      animate={{ rotate: 360 }}
+      transition={{
+        duration: 60,
+        repeat: Infinity,
+        ease: 'linear',
+      }}
+    >
 
-              {/* Orbiting skills */}
-              {orbitSkills.map((skill, index) => (
-                <OrbitSkill key={skill} skill={skill} index={index} total={orbitSkills.length} />
-              ))}
-            </div>
-          </ScrollReveal>
+      {/* Core */}
+      <div className="
+        absolute
+        top-1/2 left-1/2
+        -translate-x-1/2 -translate-y-1/2
+        w-36 h-36
+        rounded-full
+        bg-gradient-to-br from-glow-primary/20 to-glow-secondary/20
+        border border-primary/30
+        flex items-center justify-center
+        shadow-lg
+      ">
+        <span className="font-display font-bold text-lg gradient-text">
+          SYSTEMS
+        </span>
+      </div>
+
+
+      {/* Orbit ring 1 */}
+      <div className="
+        absolute
+        top-1/2 left-1/2
+        -translate-x-1/2 -translate-y-1/2
+        w-[300px] h-[300px]
+        rounded-full
+        border border-primary/20
+      " />
+
+
+      {/* Orbit ring 2 */}
+      <div className="
+        absolute
+        top-1/2 left-1/2
+        -translate-x-1/2 -translate-y-1/2
+        w-[420px] h-[420px]
+        rounded-full
+        border border-primary/10
+      " />
+
+
+      {/* Orbit skills */}
+      {orbitSkills.map((skill, index) => {
+
+        const radius = index % 2 === 0 ? 150 : 210;
+        const angle = (index / orbitSkills.length) * 360;
+
+        const x =
+          Math.cos((angle * Math.PI) / 180) * radius;
+
+        const y =
+          Math.sin((angle * Math.PI) / 180) * radius;
+
+        return (
+          <motion.div
+            key={skill}
+            className="
+              absolute
+              px-4 py-2
+              rounded-full
+              bg-card/90
+              backdrop-blur-sm
+              border border-primary/30
+              text-sm font-mono
+              shadow-md
+              hover:border-primary
+              hover:text-primary
+              transition-all duration-300
+            "
+            style={{
+              left: `calc(50% + ${x}px - 50px)`,
+              top: `calc(50% + ${y}px - 14px)`,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              delay: index * 0.05,
+              type: 'spring',
+            }}
+          >
+            {skill}
+          </motion.div>
+        );
+
+      })}
+
+    </motion.div>
+
+  </div>
+</ScrollReveal>
+
+
         </div>
       </div>
     </section>

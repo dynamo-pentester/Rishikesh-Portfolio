@@ -2,10 +2,19 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MagneticButton from '@/components/ui/MagneticButton';
 import { useProfile } from '@/contexts/ProfileContext';
-import sakuraBranch from '@/assets/sakura-branch.png';
+import sakuraCanopy from '@/assets/sakura-canopy.png';
+import { useScroll, useTransform } from 'framer-motion';
+
+const branchColor = '#3b1f26';
 
 /* ── Typewriter ─────────────────────────────────────────── */
-function TypewriterText({ roles }: { roles: string[] }) {
+function TypewriterText({
+  roles,
+  color,
+}: {
+  roles: string[];
+  color: string;
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -18,81 +27,89 @@ function TypewriterText({ roles }: { roles: string[] }) {
 
   useEffect(() => {
     const currentRole = roles[currentIndex];
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          if (displayText.length < currentRole.length) {
-            setDisplayText(currentRole.slice(0, displayText.length + 1));
-          } else {
-            setTimeout(() => setIsDeleting(true), 2000);
-          }
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        if (displayText.length < currentRole.length) {
+          setDisplayText(currentRole.slice(0, displayText.length + 1));
         } else {
-          if (displayText.length > 0) {
-            setDisplayText(displayText.slice(0, -1));
-          } else {
-            setIsDeleting(false);
-            setCurrentIndex((prev) => (prev + 1) % roles.length);
-          }
+          setTimeout(() => setIsDeleting(true), 2000);
         }
-      },
-      isDeleting ? 50 : 100
-    );
+      } else {
+        if (displayText.length > 0) {
+          setDisplayText(displayText.slice(0, -1));
+        } else {
+          setIsDeleting(false);
+          setCurrentIndex((prev) => (prev + 1) % roles.length);
+        }
+      }
+    }, isDeleting ? 50 : 100);
+
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, currentIndex, roles]);
 
   return (
-    <span className="font-mono text-primary">
+    <span
+      className="font-mono"
+      style={{ color }}
+    >
       {displayText}
+
       <motion.span
         animate={{ opacity: [1, 0] }}
-        transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
-        className="inline-block w-[3px] h-[1em] bg-primary ml-1 align-middle"
+        transition={{ duration: 0.5, repeat: Infinity }}
+        className="inline-block w-[3px] h-[1em] ml-1 align-middle"
+        style={{ backgroundColor: color }}
       />
     </span>
   );
 }
 
 /* ── Backend: Sakura morning bg ─────────────────────────── */
+/* ── Backend: Sakura morning bg ─────────────────────────── */
 function BackendBackground() {
+
+  const { scrollY } = useScroll();
+
+  // subtle parallax
+  const canopyY = useTransform(scrollY, [0, 600], [0, 80]);
+
   return (
     <>
-      {/* Sky gradient */}
+      {/* Sky gradient base */}
       <div
         className="absolute inset-0"
         style={{
           background: 'linear-gradient(to bottom, #fff6fb, #ffeef5, #f8e8f0)',
+          zIndex: 0,
         }}
       />
-      {/* Soft sun circle */}
+
+      {/* Sakura canopy — TRUE background */}
+<motion.img
+  src={sakuraCanopy}
+  alt=""
+  className="absolute top-0 left-0 pointer-events-none select-none"
+  style={{
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+    zIndex: 0,
+    opacity: 0.95,
+    y: canopyY, // ✅ THIS activates parallax
+  }}
+  initial={{ opacity: 0, y: -40 }}
+  animate={{ opacity: 0.95, y: 0 }}
+  transition={{ duration: 1.2 }}
+/>
+
+      {/* Subtle pink glow */}
       <div
-        className="absolute pointer-events-none select-none"
+        className="absolute inset-0 pointer-events-none select-none"   
         style={{
-          width: 'clamp(220px, 30vw, 420px)',
-          height: 'clamp(220px, 30vw, 420px)',
-          right: 'clamp(5%, 12%, 15%)',
-          top: '18%',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,100,150,0.35) 0%, rgba(255,150,180,0.15) 50%, transparent 75%)',
-          filter: 'blur(1px)',
-          opacity: 0.8,
+          background: 'radial-gradient(circle at center, rgba(255,182,193,0.15) 0%, transparent 70%)',
         }}
-      />
-      {/* Sakura branch — desktop right, scaled mobile */}
-      <motion.img
-        src={sakuraBranch}
-        alt=""
-        className="absolute pointer-events-none select-none"
-        style={{
-          bottom: '-10%',
-          right: '-5%',
-          height: 'clamp(40vh, 65vh, 85vh)',
-          width: 'auto',
-          opacity: 0.82,
-          mixBlendMode: 'multiply',
-        }}
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 0.82, x: 0 }}
-        transition={{ duration: 1.8, ease: 'easeOut' }}
       />
     </>
   );
@@ -160,6 +177,21 @@ export default function HeroSection() {
   const { profile, mode, toggleMode } = useProfile();
   const isBackend = mode === 'backend';
 
+const heroColors = isBackend
+  ? {
+      titlePrimary: '#3b1f26',   // branch color
+      titleSecondary: '#2a1419', // darker branch
+      subtitle: '#4a2a33',
+      role: '#3b1f26',
+    }
+  : {
+      titlePrimary: '#ff2d55',
+      titleSecondary: '#ffffff',
+      subtitle: '#ff4d6d',
+      role: '#ff6b81',
+    };
+
+
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -167,7 +199,7 @@ export default function HeroSection() {
   const nameParts = profile.heroTitle?.split(' ') ?? ['Rishikesh', 'R'];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden isolate">
 
       {/* z-0 ── Background layer */}
       <AnimatePresence mode="wait">
@@ -190,7 +222,19 @@ export default function HeroSection() {
       />
 
       {/* z-20 ── Hero content */}
-      <div className="relative z-20 section-container text-center w-full pt-24 pb-12 px-4 sm:px-6">
+      <div className="
+  relative
+  z-20
+  text-center
+  w-full
+  max-w-[900px]
+  mx-auto
+  pt-20
+  pb-10
+  px-4
+  sm:px-6
+">
+
         <AnimatePresence mode="wait">
           <motion.div
             key={mode}
@@ -204,32 +248,44 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="font-mono text-xs sm:text-sm md:text-base mb-5 tracking-[0.25em] uppercase text-primary"
+              style={{ color: heroColors.subtitle }}
+className="font-mono text-xs sm:text-sm md:text-base mb-5 tracking-[0.25em] uppercase"
+
             >
               {profile.heroSubtitle}
             </motion.p>
 
             {/* Name */}
-            <h1 className="font-display font-bold mb-6 tracking-tight leading-none"
-              style={{ fontSize: 'clamp(2.8rem, 10vw, 8rem)' }}
-            >
+            <h1
+  className="font-display font-bold mb-6 tracking-tight leading-none"
+  style={{
+    fontSize: 'clamp(2.4rem, 8vw, 6.5rem)',
+    textShadow: isBackend
+      ? '0 2px 10px rgba(58,31,38,0.15)'
+      : '0 0 20px rgba(255,0,0,0.4)'
+  }}
+>
+
               <motion.span
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.7 }}
-                className="gradient-text"
-              >
-                {nameParts[0]}
-              </motion.span>
-              <span style={{ color: 'hsl(var(--foreground))' }}> </span>
-              <motion.span
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.7 }}
-                style={{ color: 'hsl(var(--foreground))' }}
-              >
-                {nameParts[1]}
-              </motion.span>
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.2, duration: 0.7 }}
+  style={{ color: heroColors.titlePrimary }}
+>
+  {nameParts[0]}
+</motion.span>
+
+<span> </span>
+
+<motion.span
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.35, duration: 0.7 }}
+  style={{ color: heroColors.titleSecondary }}
+>
+  {nameParts[1]}
+</motion.span>
+
             </h1>
 
             {/* Typewriter + mode switch */}
@@ -239,48 +295,92 @@ export default function HeroSection() {
               transition={{ delay: 0.6, duration: 0.5 }}
               className="mb-10 flex flex-col items-center gap-4"
             >
-              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
-                <TypewriterText roles={profile.roles} />
+              <div className="
+  text-base
+  sm:text-lg
+  md:text-xl
+  lg:text-2xl
+  xl:text-3xl
+  min-h-[32px]
+">
+                <TypewriterText roles={profile.roles} color={heroColors.role} />
               </div>
 
               {/* Mode toggle pill */}
-              <motion.button
-                onClick={toggleMode}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border transition-all duration-300"
-                style={{
-                  borderColor: 'hsl(var(--primary) / 0.4)',
-                  color: 'hsl(var(--primary))',
-                  background: 'hsl(var(--primary) / 0.06)',
-                }}
-              >
-                {mode === 'backend' ? '⚔ Switch to Security Profile' : '⚙ Switch to Backend Profile'}
-              </motion.button>
+<motion.button
+  onClick={toggleMode}
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.97 }}
+  className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border transition-all duration-300"
+  style={
+    isBackend
+      ? {
+          borderColor: '#3b1f26',
+          color: '#3b1f26',
+          background: 'rgba(255,255,255,0.65)',
+          backdropFilter: 'blur(6px)',
+          boxShadow: '0 4px 18px rgba(59,31,38,0.15)',
+        }
+      : {
+          borderColor: '#ff4d6d',
+          color: '#ff4d6d',
+          background: 'rgba(255,77,109,0.08)',
+        }
+  }
+>
+  {mode === 'backend'
+    ? 'Switch to Security Profile'
+    : 'Switch to Backend Profile'}
+</motion.button>
+
             </motion.div>
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.85, duration: 0.5 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <MagneticButton
-                variant="primary"
-                size="lg"
-                onClick={() => scrollToSection('projects')}
-              >
-                View My Work
-              </MagneticButton>
-              <MagneticButton
-                variant="outline"
-                size="lg"
-                onClick={() => scrollToSection('contact')}
-              >
-                Get in Touch
-              </MagneticButton>
-            </motion.div>
+  initial={{ opacity: 0, y: 16 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.85, duration: 0.5 }}
+  className="
+    flex
+    flex-col
+    sm:flex-row
+    gap-3
+    justify-center
+    items-center
+    mt-2
+  "
+>
+  <MagneticButton
+    variant="secondary"
+    size="lg"
+    className="
+  px-5 py-2.5
+  text-sm sm:text-base
+  w-[180px]
+  sm:w-auto
+"
+
+    onClick={() => scrollToSection('projects')}
+  >
+    View My Work
+  </MagneticButton>
+
+  <MagneticButton
+    variant="primary"
+    size="lg"
+    className="
+      px-6 py-3
+      text-sm sm:text-base
+      w-[200px]
+      sm:w-auto
+    "
+    onClick={() => scrollToSection('contact')}
+  >
+    Get in Touch
+  </MagneticButton>
+</motion.div>
+
+
           </motion.div>
         </AnimatePresence>
       </div>

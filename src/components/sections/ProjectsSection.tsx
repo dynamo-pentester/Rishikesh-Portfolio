@@ -19,7 +19,7 @@ const projects = [
     color: 'primary' as const,
     details:
       'Built at Alcatel-Lucent Enterprise to support Technical Support Engineers in diagnosing production switch failures. Designed a FastAPI backend to ingest multi-GB compressed log archives, extract structured datasets, and generate filtered and comparative analysis. Implemented automated parsing pipelines and interactive visualizations, significantly improving debugging speed and diagnostic accuracy.',
-    github: '#',
+    github: 'https://github.com/dynamo-pentester/WDA-TOOL.git',
     live: '#',
   },
   {
@@ -43,29 +43,12 @@ const projects = [
     'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&q=80',
   color: 'secondary' as const,
   details:
-    'Built a kernel-to-blockchain forensic pipeline integrating ksentinel syscall integrity monitor with a secure evidence handling daemon. Used Netlink for kernel-userspace communication, cryptographic signing using Ed25519, authenticated encryption using AES-GCM, and Merkle Tree batching with blockchain anchoring to create tamper-proof forensic evidence.',
-  github: 'https://github.com/dynamo-pentester',
+    'Built a kernel-to-blockchain forensic pipeline integrating ksentinel syscall integrity monitor with a secure evidence handling daemon. Used Netlink for kernel-userspace communication, cryptographic signing using Ed25519, authenticated encryption using AES-GCM, and Merkle Tree batching with blockchain anchoring to create tamper-proof forensic evidence. This is a Research Prototype and not publicly released due to security implications.',
+  github: '#',
   live: '#',
 },
-
   {
     id: 3,
-    title: 'SecureSplit',
-    category: 'Security Engineering • Distributed Storage',
-    description:
-      'IPFS-based decentralized storage system with cryptographic data partitioning.',
-    tech: ['Python', 'FastAPI', 'IPFS', 'Pinata', 'Encryption'],
-    image:
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
-    color: 'accent' as const,
-    details:
-      'Designed a secure distributed storage system using IPFS with cryptographic partitioning for confidentiality and fault tolerance. Implemented encryption workflows separating keys from encrypted data and leveraging IPFS for decentralized storage and retrieval.',
-    github: 'https://github.com/dynamo-pentester',
-    live: '#',
-  },
-
-  {
-    id: 4,
     title: 'MatCare',
     category: 'Backend Engineering • IoT Systems',
     description:
@@ -83,7 +66,23 @@ const projects = [
     color: 'primary' as const,
     details:
       'Built backend infrastructure to ingest and process real-time IoT health telemetry from sensor devices. Implemented database pipelines, REST APIs, and classification models for health status prediction, enabling continuous remote monitoring.',
-    github: 'https://github.com/dynamo-pentester',
+    github: 'https://github.com/dynamo-pentester/Matcare.git',
+    live: '#',
+  },
+
+  {
+    id: 4,
+    title: 'SecureSplit',
+    category: 'Security Engineering • Distributed Storage',
+    description:
+      'IPFS-based decentralized storage system with cryptographic data partitioning.',
+    tech: ['Python', 'FastAPI', 'IPFS', 'Pinata', 'Encryption'],
+    image:
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
+    color: 'accent' as const,
+    details:
+      'Designed a secure distributed storage system using IPFS with cryptographic partitioning for confidentiality and fault tolerance. Implemented encryption workflows separating keys from encrypted data and leveraging IPFS for decentralized storage and retrieval.',
+    github: 'https://github.com/dynamo-pentester/SecureSpli.git',
     live: '#',
   },
   {
@@ -107,7 +106,7 @@ const projects = [
   details:
     'Built a hybrid fraud detection system combining supervised Multi-Layer Perceptron and unsupervised Autoencoder models. Implemented anomaly detection workflows, imbalance handling using SMOTE, and performance analysis using ROC and precision-recall metrics.',
   github:
-    'https://github.com/DYNAMO_PENTESTER/fraud-detection',
+    'https://github.com/dynamo-pentester/Credit_card_fraud.git',
   live: '#',
 },
 {
@@ -131,7 +130,7 @@ const projects = [
   details:
     'Developed a full-stack blog platform with secure authentication, RESTful backend APIs, and persistent database storage. Implemented user sessions, post management, and scalable backend architecture.',
   github:
-    'https://github.com/dynamo-pentester',
+    'https://github.com/dynamo-pentester/React-blog.git',
   live: '#',
 },
 

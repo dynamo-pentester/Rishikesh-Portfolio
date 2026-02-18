@@ -32,64 +32,90 @@ const profileData: Record<ProfileMode, ProfileData> = {
     heroTitle: 'Rishikesh R',
     heroSubtitle: 'Building systems that scale',
     roles: [
-      'Backend Engineer',
-      'Systems Developer',
-      'Infrastructure Builder',
-      'Full-Stack Developer',
-    ],
+  'Backend Engineer',
+  'Systems Engineer',
+  'Infrastructure Engineer',
+  'Distributed Systems Developer',
+],
+
     about: [
       "I design and build backend systems, infrastructure tooling, and performance-critical applications. My focus includes distributed systems, log analysis pipelines, kernel-level integrations, and scalable architectures.",
       "With hands-on experience at Alcatel-Lucent Enterprise building production tools for log analysis and diagnostics, I take ownership of features end to end — focusing on scalable, reliable systems with security and correctness baked into the design.",
     ],
-    techTags: ['Python', 'FastAPI', 'C++', 'PostgreSQL', 'Docker', 'Linux'],
+    techTags: [
+  'Python',
+  'FastAPI',
+  'C/C++',
+  'PostgreSQL',
+  'Docker',
+  'Linux',
+],
+
     skills: [
-      {
-        category: 'Backend',
-        items: [
-          { name: 'Python', level: 92 },
-          { name: 'FastAPI', level: 90 },
-          { name: 'Node.js', level: 85 },
-          { name: 'PostgreSQL', level: 82 },
-        ],
-      },
-      {
-        category: 'Systems',
-        items: [
-          { name: 'Linux', level: 95 },
-          { name: 'C/C++', level: 88 },
-          { name: 'Socket Programming', level: 85 },
-          { name: 'Log Analysis', level: 90 },
-        ],
-      },
-      {
-        category: 'DevOps',
-        items: [
-          { name: 'Docker', level: 85 },
-          { name: 'AWS', level: 75 },
-          { name: 'CI/CD', level: 80 },
-          { name: 'Git/GitHub', level: 90 },
-        ],
-      },
-      {
-        category: 'Languages',
-        items: [
-          { name: 'Java', level: 80 },
-          { name: 'Rust', level: 65 },
-          { name: 'SQL', level: 85 },
-          { name: 'Bash', level: 82 },
-        ],
-      },
+  {
+    category: 'Backend Engineering',
+    items: [
+      { name: 'FastAPI', level: 90 },
+      { name: 'Node.js', level: 85 },
+      { name: 'REST API Design', level: 90 },
+      { name: 'Data Pipelines', level: 88 },
+    ],
+  },
+
+  {
+    category: 'Programming Languages',
+    items: [
+      { name: 'Python', level: 92 },
+      { name: 'C/C++', level: 88 },
+      { name: 'Java', level: 80 },
+      { name: 'SQL', level: 85 },
+      { name: 'Bash', level: 82 },
+    ],
+  },
+
+  {
+    category: 'Systems Engineering',
+    items: [
+      { name: 'Linux', level: 95 },
+      { name: 'Socket Programming', level: 85 },
+      { name: 'Log Analysis', level: 90 },
+      { name: 'Process & Memory Concepts', level: 85 },
+    ],
+  },
+
+  {
+    category: 'Databases',
+    items: [
+      { name: 'PostgreSQL', level: 95},
+      { name: 'SQLite', level: 88 },
+      {name: 'MySQL', level: 90 },
+      {name: 'MongoDB', level: 88 },
+      { name: 'Query Optimization', level: 80 },
+    ],
+  },
+
+  {
+    category: 'DevOps & Infrastructure',
+    items: [
+      { name: 'Docker', level: 85 },
+      { name: 'CI/CD', level: 80 },
+      { name: 'Git/GitHub', level: 90 },
+      { name: 'AWS', level: 75 },
+    ],
+  },
     ],
   },
   security: {
     heroTitle: 'Rishikesh R',
     heroSubtitle: 'Entering the red zone',
-    roles: [
-      'Purple Team Engineer',
-      'Penetration Tester',
-      'Exploit Researcher',
-      'Red Team Operator',
-    ],
+   roles: [
+    'Red Teaming Specialist',
+    'Penetration Tester',
+    'Systems Security Engineer',
+    'Kernel Security Researcher',
+    'Bug Bounty Hunter',
+],
+
     about: [
       "I specialize in offensive security, kernel integrity monitoring, and protocol-level analysis. My work includes rootkit detection, syscall monitoring, exploit research, and building tools that bridge offensive and defensive security.",
       "With hands-on VAPT experience, bug bounty earnings on HackerOne, and IndiaSkills State Winner in Cyber Security, I focus on practical testing, clear reporting, and understanding real-world attack paths.",
