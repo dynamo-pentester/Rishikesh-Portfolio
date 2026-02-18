@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import AnimatedText from '@/components/ui/AnimatedText';
 import MagneticButton from '@/components/ui/MagneticButton';
 import { useProfile } from '@/contexts/ProfileContext';
 import sakuraBranch from '@/assets/sakura-branch.png';
 
+/* ── Typewriter ─────────────────────────────────────────── */
 function TypewriterText({ roles }: { roles: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
@@ -52,192 +52,236 @@ function TypewriterText({ roles }: { roles: string[] }) {
   );
 }
 
-export default function HeroSection() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const { profile, mode, toggleMode } = useProfile();
+/* ── Backend: Sakura morning bg ─────────────────────────── */
+function BackendBackground() {
+  return (
+    <>
+      {/* Sky gradient */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to bottom, #fff6fb, #ffeef5, #f8e8f0)',
+        }}
+      />
+      {/* Soft sun circle */}
+      <div
+        className="absolute pointer-events-none select-none"
+        style={{
+          width: 'clamp(220px, 30vw, 420px)',
+          height: 'clamp(220px, 30vw, 420px)',
+          right: 'clamp(5%, 12%, 15%)',
+          top: '18%',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,100,150,0.35) 0%, rgba(255,150,180,0.15) 50%, transparent 75%)',
+          filter: 'blur(1px)',
+          opacity: 0.8,
+        }}
+      />
+      {/* Sakura branch — desktop right, scaled mobile */}
+      <motion.img
+        src={sakuraBranch}
+        alt=""
+        className="absolute pointer-events-none select-none"
+        style={{
+          bottom: '-10%',
+          right: '-5%',
+          height: 'clamp(40vh, 65vh, 85vh)',
+          width: 'auto',
+          opacity: 0.82,
+          mixBlendMode: 'multiply',
+        }}
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 0.82, x: 0 }}
+        transition={{ duration: 1.8, ease: 'easeOut' }}
+      />
+    </>
+  );
+}
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
+/* ── Security: Red moon night bg ────────────────────────── */
+function SecurityBackground() {
+  return (
+    <>
+      {/* Dark sky */}
+      <div
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(to bottom, #050505, #0d0000, #050505)' }}
+      />
+      {/* Moon glow aura */}
+      <div
+        className="absolute pointer-events-none select-none"
+        style={{
+          width: 'clamp(240px, 32vw, 520px)',
+          height: 'clamp(240px, 32vw, 520px)',
+          right: 'clamp(-10%, 8%, 12%)',
+          top: '12%',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,0,0,0.18) 0%, rgba(180,0,0,0.08) 50%, transparent 70%)',
+        }}
+      />
+      {/* Moon disc */}
+      <motion.div
+        className="absolute pointer-events-none select-none"
+        style={{
+          width: 'clamp(140px, 18vw, 280px)',
+          height: 'clamp(140px, 18vw, 280px)',
+          right: 'clamp(-5%, 10%, 13%)',
+          top: '15%',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,40,40,0.92) 0%, rgba(200,0,0,0.75) 55%, rgba(120,0,0,0.4) 100%)',
+          boxShadow:
+            '0 0 80px rgba(255,0,0,0.6), 0 0 160px rgba(255,0,0,0.35), 0 0 280px rgba(200,0,0,0.2)',
+        }}
+        animate={{ opacity: [0.85, 1, 0.85] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Subtle red horizon fog */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: '35%',
+          background: 'linear-gradient(to top, rgba(60,0,0,0.3), transparent)',
+        }}
+      />
+      {/* Matrix scanline accent */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.015) 2px, rgba(0,255,0,0.015) 4px)',
+        }}
+      />
+    </>
+  );
+}
+
+/* ── Main HeroSection ───────────────────────────────────── */
+export default function HeroSection() {
+  const { profile, mode, toggleMode } = useProfile();
+  const isBackend = mode === 'backend';
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const nameParts = profile.heroTitle?.split(' ') ?? ['Rishikesh', 'R'];
-  const isBackend = mode === 'backend';
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Layer 1: Background gradient */}
+
+      {/* z-0 ── Background layer */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={mode}
+          key={`bg-${mode}`}
           className="absolute inset-0 z-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2 }}
         >
-          {isBackend ? (
-            /* Sakura morning sky */
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary to-muted" />
-          ) : (
-            /* Red moon night */
-            <>
-              <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
-              {/* Red moon glow */}
-              <div
-                className="absolute top-[10%] right-[15%] w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, hsl(var(--primary) / 0.4) 0%, hsl(var(--primary) / 0.15) 40%, transparent 70%)',
-                }}
-              />
-              <div
-                className="absolute top-[12%] right-[17%] w-[120px] h-[120px] md:w-[160px] md:h-[160px] rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, hsl(var(--primary) / 0.7) 0%, hsl(var(--primary) / 0.3) 60%, transparent 100%)',
-                  boxShadow: '0 0 80px hsl(var(--primary) / 0.5), 0 0 160px hsl(var(--primary) / 0.3)',
-                }}
-              />
-            </>
-          )}
+          {isBackend ? <BackendBackground /> : <SecurityBackground />}
         </motion.div>
       </AnimatePresence>
 
-      {/* Layer 2: Sakura branch or ambient mist */}
-      <AnimatePresence mode="wait">
-        {isBackend ? (
+      {/* z-15 ── Bottom fade into page body */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-[15] pointer-events-none"
+        style={{ height: '140px', background: 'linear-gradient(to top, hsl(var(--background)), transparent)' }}
+      />
+
+      {/* z-20 ── Hero content */}
+      <div className="relative z-20 section-container text-center w-full pt-24 pb-12 px-4 sm:px-6">
+        <AnimatePresence mode="wait">
           <motion.div
-            key="sakura-branch"
-            className="absolute top-0 right-0 z-[5] pointer-events-none"
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 0.7, x: 0 }}
-            exit={{ opacity: 0, x: 60 }}
-            transition={{ duration: 1.5 }}
+            key={mode}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.7 }}
           >
-            <img
-              src={sakuraBranch}
-              alt=""
-              className="w-[280px] md:w-[400px] lg:w-[500px] h-auto"
-              style={{ mixBlendMode: 'multiply' }}
-            />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="night-mist"
-            className="absolute inset-0 z-[5] pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5 }}
-          >
-            {/* Atmospheric fog/mist layers */}
-            <div className="absolute bottom-0 left-0 right-0 h-[40%] bg-gradient-to-t from-background/80 to-transparent" />
-            <div className="absolute top-[30%] left-[10%] w-[500px] h-[200px] bg-primary/5 rounded-full blur-[100px]" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Particles now rendered globally in Index.tsx */}
-
-      {/* Gradient fade to background color at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-[15] pointer-events-none" />
-
-      {/* Layer 4: Hero content */}
-      <div className="relative z-20 section-container text-center">
-        <AnimatePresence>
-          {isLoaded && (
-            <motion.div
-              key={profile.heroSubtitle}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
+            {/* Pre-title */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="font-mono text-xs sm:text-sm md:text-base mb-5 tracking-[0.25em] uppercase text-primary"
             >
-              {/* Pre-title */}
-              <motion.p
-                key={profile.heroSubtitle}
-                initial={{ opacity: 0, y: 20 }}
+              {profile.heroSubtitle}
+            </motion.p>
+
+            {/* Name */}
+            <h1 className="font-display font-bold mb-6 tracking-tight leading-none"
+              style={{ fontSize: 'clamp(2.8rem, 10vw, 8rem)' }}
+            >
+              <motion.span
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="font-mono text-sm md:text-base mb-6 tracking-widest uppercase text-primary"
+                transition={{ delay: 0.2, duration: 0.7 }}
+                className="gradient-text"
               >
-                {profile.heroSubtitle}
-              </motion.p>
-
-              {/* Main name */}
-              <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold mb-6 tracking-tight">
-                <motion.span
-                  key={profile.heroTitle}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="gradient-text"
-                >
-                  {nameParts[0]}
-                </motion.span>
-                <span className="text-foreground"> </span>
-                <motion.span
-                  key={profile.heroTitle + '-last'}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="text-foreground"
-                >
-                  {nameParts[1]}
-                </motion.span>
-              </h1>
-
-              {/* Subtitle with typewriter */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                {nameParts[0]}
+              </motion.span>
+              <span style={{ color: 'hsl(var(--foreground))' }}> </span>
+              <motion.span
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.6 }}
-                className="mb-12 flex flex-col items-center gap-3"
+                transition={{ delay: 0.35, duration: 0.7 }}
+                style={{ color: 'hsl(var(--foreground))' }}
               >
-                <div className="text-xl md:text-2xl lg:text-3xl text-muted-foreground">
-                  <TypewriterText roles={profile.roles} />
-                </div>
+                {nameParts[1]}
+              </motion.span>
+            </h1>
 
-                <motion.button
-                  onClick={toggleMode}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.6 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="font-mono text-xs uppercase tracking-[0.2em] transition-colors text-muted-foreground hover:text-primary"
-                >
-                  {mode === 'backend'
-                    ? 'Switch to Security Profile'
-                    : 'Switch to Backend Profile'}
-                </motion.button>
-              </motion.div>
+            {/* Typewriter + mode switch */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="mb-10 flex flex-col items-center gap-4"
+            >
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                <TypewriterText roles={profile.roles} />
+              </div>
 
-              {/* CTA Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2, duration: 0.6 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              {/* Mode toggle pill */}
+              <motion.button
+                onClick={toggleMode}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border transition-all duration-300"
+                style={{
+                  borderColor: 'hsl(var(--primary) / 0.4)',
+                  color: 'hsl(var(--primary))',
+                  background: 'hsl(var(--primary) / 0.06)',
+                }}
               >
-                <MagneticButton
-                  variant="primary"
-                  size="lg"
-                  onClick={() => scrollToSection('projects')}
-                >
-                  View My Work
-                </MagneticButton>
-                <MagneticButton
-                  variant="outline"
-                  size="lg"
-                  onClick={() => scrollToSection('contact')}
-                >
-                  Get in Touch
-                </MagneticButton>
-              </motion.div>
+                {mode === 'backend' ? '⚔ Switch to Security Profile' : '⚙ Switch to Backend Profile'}
+              </motion.button>
             </motion.div>
-          )}
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.85, duration: 0.5 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <MagneticButton
+                variant="primary"
+                size="lg"
+                onClick={() => scrollToSection('projects')}
+              >
+                View My Work
+              </MagneticButton>
+              <MagneticButton
+                variant="outline"
+                size="lg"
+                onClick={() => scrollToSection('contact')}
+              >
+                Get in Touch
+              </MagneticButton>
+            </motion.div>
+          </motion.div>
         </AnimatePresence>
       </div>
 
@@ -245,7 +289,7 @@ export default function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
+        transition={{ delay: 1.8, duration: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
       >
         <motion.div
