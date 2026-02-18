@@ -6,55 +6,55 @@
 
 @layer base {
   :root {
-    /* Backend theme: Deep space + Cyan/Blue */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
+    /* Backend theme: Sakura Morning — warm light aesthetic */
+    --background: 20 30% 95%;
+    --foreground: 330 30% 20%;
 
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
+    --card: 20 25% 97%;
+    --card-foreground: 330 30% 20%;
 
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 20 25% 97%;
+    --popover-foreground: 330 30% 20%;
 
-    --primary: 185 100% 50%;
-    --primary-foreground: 240 10% 4%;
+    --primary: 340 60% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 8% 12%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 330 20% 90%;
+    --secondary-foreground: 330 25% 35%;
 
-    --muted: 240 6% 14%;
-    --muted-foreground: 240 5% 55%;
+    --muted: 330 15% 88%;
+    --muted-foreground: 330 15% 45%;
 
-    --accent: 220 90% 60%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 200 60% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 8% 18%;
-    --input: 240 8% 18%;
-    --ring: 185 100% 50%;
+    --border: 330 15% 82%;
+    --input: 330 15% 82%;
+    --ring: 340 60% 55%;
 
     --radius: 0.75rem;
 
-    --glow-primary: 185 100% 50%;
-    --glow-secondary: 220 90% 60%;
-    --glow-accent: 200 100% 45%;
+    --glow-primary: 340 60% 55%;
+    --glow-secondary: 320 45% 50%;
+    --glow-accent: 200 60% 50%;
 
-    --surface-elevated: 240 10% 8%;
-    --surface-hover: 240 10% 12%;
+    --surface-elevated: 20 25% 93%;
+    --surface-hover: 330 20% 90%;
 
-    --text-gradient-start: 185 100% 50%;
-    --text-gradient-end: 220 90% 60%;
+    --text-gradient-start: 340 60% 55%;
+    --text-gradient-end: 320 45% 50%;
 
-    --sidebar-background: 240 10% 6%;
-    --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 185 100% 50%;
-    --sidebar-primary-foreground: 240 10% 4%;
-    --sidebar-accent: 240 8% 12%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 8% 18%;
-    --sidebar-ring: 185 100% 50%;
+    --sidebar-background: 20 25% 97%;
+    --sidebar-foreground: 330 25% 35%;
+    --sidebar-primary: 340 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 330 20% 90%;
+    --sidebar-accent-foreground: 330 30% 20%;
+    --sidebar-border: 330 15% 82%;
+    --sidebar-ring: 340 60% 55%;
   }
 
   /* Security / Red Team theme */

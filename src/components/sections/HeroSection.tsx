@@ -85,23 +85,23 @@ export default function HeroSection() {
         >
           {isBackend ? (
             /* Sakura morning sky */
-            <div className="absolute inset-0 bg-gradient-to-b from-[#c9e6f0] via-[#e8d5e0] to-[#f5e6d3]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary to-muted" />
           ) : (
             /* Red moon night */
             <>
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0a0008] via-[#140010] to-[#0d0000]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
               {/* Red moon glow */}
               <div
                 className="absolute top-[10%] right-[15%] w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, hsla(0,80%,40%,0.4) 0%, hsla(0,80%,30%,0.15) 40%, transparent 70%)',
+                  background: 'radial-gradient(circle, hsl(var(--primary) / 0.4) 0%, hsl(var(--primary) / 0.15) 40%, transparent 70%)',
                 }}
               />
               <div
                 className="absolute top-[12%] right-[17%] w-[120px] h-[120px] md:w-[160px] md:h-[160px] rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, hsla(0,70%,50%,0.7) 0%, hsla(0,80%,35%,0.3) 60%, transparent 100%)',
-                  boxShadow: '0 0 80px hsla(0,80%,40%,0.5), 0 0 160px hsla(0,70%,30%,0.3)',
+                  background: 'radial-gradient(circle, hsl(var(--primary) / 0.7) 0%, hsl(var(--primary) / 0.3) 60%, transparent 100%)',
+                  boxShadow: '0 0 80px hsl(var(--primary) / 0.5), 0 0 160px hsl(var(--primary) / 0.3)',
                 }}
               />
             </>
@@ -137,8 +137,8 @@ export default function HeroSection() {
             transition={{ duration: 1.5 }}
           >
             {/* Atmospheric fog/mist layers */}
-            <div className="absolute bottom-0 left-0 right-0 h-[40%] bg-gradient-to-t from-[#0a0008]/80 to-transparent" />
-            <div className="absolute top-[30%] left-[10%] w-[500px] h-[200px] bg-[hsla(0,60%,20%,0.05)] rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 left-0 right-0 h-[40%] bg-gradient-to-t from-background/80 to-transparent" />
+            <div className="absolute top-[30%] left-[10%] w-[500px] h-[200px] bg-primary/5 rounded-full blur-[100px]" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -179,9 +179,7 @@ export default function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className={`font-mono text-sm md:text-base mb-6 tracking-widest uppercase ${
-                  isBackend ? 'text-[#8b5a6b]' : 'text-primary'
-                }`}
+                className="font-mono text-sm md:text-base mb-6 tracking-widest uppercase text-primary"
               >
                 {profile.heroSubtitle}
               </motion.p>
@@ -193,17 +191,17 @@ export default function HeroSection() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
-                  className={isBackend ? 'text-[#4a3040]' : 'gradient-text'}
+                  className="gradient-text"
                 >
                   {nameParts[0]}
                 </motion.span>
-                <span className={isBackend ? 'text-[#6b4f5e]' : 'text-foreground'}> </span>
+                <span className="text-foreground"> </span>
                 <motion.span
                   key={profile.heroTitle + '-last'}
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className={isBackend ? 'text-[#6b4f5e]' : 'text-foreground'}
+                  className="text-foreground"
                 >
                   {nameParts[1]}
                 </motion.span>
@@ -216,9 +214,7 @@ export default function HeroSection() {
                 transition={{ delay: 1, duration: 0.6 }}
                 className="mb-12 flex flex-col items-center gap-3"
               >
-                <div className={`text-xl md:text-2xl lg:text-3xl ${
-                  isBackend ? 'text-[#7a5a6a]' : 'text-muted-foreground'
-                }`}>
+                <div className="text-xl md:text-2xl lg:text-3xl text-muted-foreground">
                   <TypewriterText roles={profile.roles} />
                 </div>
 
@@ -228,11 +224,7 @@ export default function HeroSection() {
                   animate={{ opacity: 0.6 }}
                   whileHover={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
-                  className={`font-mono text-xs uppercase tracking-[0.2em] transition-colors ${
-                    isBackend
-                      ? 'text-[#8b5a6b]/60 hover:text-[#8b5a6b]'
-                      : 'text-muted-foreground hover:text-primary'
-                  }`}
+                  className="font-mono text-xs uppercase tracking-[0.2em] transition-colors text-muted-foreground hover:text-primary"
                 >
                   {mode === 'backend'
                     ? 'Switch to Security Profile'
@@ -280,9 +272,7 @@ export default function HeroSection() {
           className="flex flex-col items-center gap-2 cursor-pointer"
           onClick={() => scrollToSection('about')}
         >
-          <span className={`text-xs font-mono uppercase tracking-widest ${
-            isBackend ? 'text-[#8b5a6b]/60' : 'text-muted-foreground'
-          }`}>
+          <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
             Scroll
           </span>
           <div className="scroll-indicator" />
