@@ -123,7 +123,8 @@ export default function HeroSection() {
             <img
               src={sakuraBranch}
               alt=""
-              className="w-[280px] md:w-[400px] lg:w-[500px] h-auto opacity-80"
+              className="w-[280px] md:w-[400px] lg:w-[500px] h-auto"
+              style={{ mixBlendMode: 'multiply' }}
             />
           </motion.div>
         ) : (
@@ -154,6 +155,7 @@ export default function HeroSection() {
           <FallingParticles
             imageSrc={isBackend ? sakuraPetal : mapleLeaf}
             count={22}
+            blendMode={isBackend ? 'multiply' : 'screen'}
           />
         </motion.div>
       </AnimatePresence>

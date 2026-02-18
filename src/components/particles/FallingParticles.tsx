@@ -15,9 +15,10 @@ interface Particle {
 interface FallingParticlesProps {
   imageSrc: string;
   count?: number;
+  blendMode?: 'multiply' | 'screen' | 'normal';
 }
 
-export default function FallingParticles({ imageSrc, count = 20 }: FallingParticlesProps) {
+export default function FallingParticles({ imageSrc, count = 20, blendMode = 'normal' }: FallingParticlesProps) {
   const particles = useMemo<Particle[]>(() => {
     return Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -45,6 +46,7 @@ export default function FallingParticles({ imageSrc, count = 20 }: FallingPartic
             width: p.size,
             height: p.size,
             opacity: p.opacity,
+            mixBlendMode: blendMode,
           }}
           animate={{
             y: ['0vh', '110vh'],
