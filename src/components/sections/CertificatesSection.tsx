@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Award, ExternalLink, X } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TiltCard from '@/components/ui/TiltCard';
-
+import { BranchRight, RedGlowOrb } from '@/components/decorations/SectionDecorations';
 const certificates = [
   {
     id: 1,
@@ -109,6 +109,9 @@ export default function CertificatesSection() {
 
   return (
     <section id="certificates" className="relative py-32 lg:py-48 overflow-hidden">
+      <BranchRight className="-top-4 right-0" />
+      <RedGlowOrb className="bottom-[20%] -right-16" />
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-glow-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-glow-accent/5 rounded-full blur-3xl" />

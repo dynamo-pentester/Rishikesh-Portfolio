@@ -6,46 +6,46 @@
 
 @layer base {
   :root {
-    /* Backend theme: Sakura Morning — warm light aesthetic */
-    --background: 20 30% 95%;
-    --foreground: 330 30% 20%;
+    /* Backend theme: Sakura Morning — warm toned, readable */
+    --background: 30 20% 88%;
+    --foreground: 330 30% 15%;
 
-    --card: 20 25% 97%;
-    --card-foreground: 330 30% 20%;
+    --card: 25 18% 84%;
+    --card-foreground: 330 30% 15%;
 
-    --popover: 20 25% 97%;
-    --popover-foreground: 330 30% 20%;
+    --popover: 25 18% 84%;
+    --popover-foreground: 330 30% 15%;
 
-    --primary: 340 60% 55%;
+    --primary: 340 65% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 330 20% 90%;
-    --secondary-foreground: 330 25% 35%;
+    --secondary: 330 18% 78%;
+    --secondary-foreground: 330 30% 25%;
 
-    --muted: 330 15% 88%;
-    --muted-foreground: 330 15% 45%;
+    --muted: 330 12% 75%;
+    --muted-foreground: 330 20% 35%;
 
-    --accent: 200 60% 50%;
+    --accent: 200 55% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 330 15% 82%;
-    --input: 330 15% 82%;
-    --ring: 340 60% 55%;
+    --border: 330 18% 68%;
+    --input: 330 18% 68%;
+    --ring: 340 65% 48%;
 
     --radius: 0.75rem;
 
-    --glow-primary: 340 60% 55%;
-    --glow-secondary: 320 45% 50%;
-    --glow-accent: 200 60% 50%;
+    --glow-primary: 340 65% 48%;
+    --glow-secondary: 320 45% 42%;
+    --glow-accent: 200 55% 45%;
 
-    --surface-elevated: 20 25% 93%;
-    --surface-hover: 330 20% 90%;
+    --surface-elevated: 25 16% 80%;
+    --surface-hover: 330 16% 78%;
 
-    --text-gradient-start: 340 60% 55%;
-    --text-gradient-end: 320 45% 50%;
+    --text-gradient-start: 340 65% 48%;
+    --text-gradient-end: 320 45% 42%;
 
     --sidebar-background: 20 25% 97%;
     --sidebar-foreground: 330 25% 35%;

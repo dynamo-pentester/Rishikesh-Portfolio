@@ -3,9 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedText from '@/components/ui/AnimatedText';
 import MagneticButton from '@/components/ui/MagneticButton';
 import { useProfile } from '@/contexts/ProfileContext';
-import FallingParticles from '@/components/particles/FallingParticles';
-import sakuraPetal from '@/assets/sakura-petal.png';
-import mapleLeaf from '@/assets/maple-leaf.png';
 import sakuraBranch from '@/assets/sakura-branch.png';
 
 function TypewriterText({ roles }: { roles: string[] }) {
@@ -143,22 +140,7 @@ export default function HeroSection() {
         )}
       </AnimatePresence>
 
-      {/* Layer 3: Falling particles */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`particles-${mode}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <FallingParticles
-            imageSrc={isBackend ? sakuraPetal : mapleLeaf}
-            count={22}
-            blendMode={isBackend ? 'multiply' : 'screen'}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Particles now rendered globally in Index.tsx */}
 
       {/* Gradient fade to background color at bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-[15] pointer-events-none" />
