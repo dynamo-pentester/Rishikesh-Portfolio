@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ParallaxSection from '@/components/ui/ParallaxSection';
 import { useProfile } from '@/contexts/ProfileContext';
+import { BranchRight, RedGlowOrb, SectionDivider } from '@/components/decorations/SectionDecorations';
 
 export default function AboutSection() {
   const { profile, mode } = useProfile();
@@ -23,6 +24,10 @@ const stats =
 
   return (
     <section id="about" className="relative py-32 lg:py-48 overflow-hidden">
+      {/* Decorative scenery */}
+      <BranchRight className="top-0 right-0" />
+      <RedGlowOrb className="top-[20%] -right-20" />
+
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 -left-32 w-64 h-64 bg-glow-primary/5 rounded-full blur-3xl" />

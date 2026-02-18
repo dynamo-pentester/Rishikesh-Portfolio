@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Shield, Trophy, Flag, Bug, Target } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import TiltCard from '@/components/ui/TiltCard';
+import { BranchLeft, RedGlowOrb } from '@/components/decorations/SectionDecorations';
 const ctfEvents = [
 {
   id: 1,
@@ -107,6 +108,9 @@ const ctfEvents = [
 export default function CTFSection() {
   return (
     <section id="ctf" className="relative py-32 lg:py-48 overflow-hidden">
+      <BranchLeft className="top-8 -left-8" />
+      <RedGlowOrb className="top-[50%] -left-20" />
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 right-0 w-96 h-96 bg-glow-accent/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-0 w-64 h-64 bg-glow-primary/5 rounded-full blur-3xl" />

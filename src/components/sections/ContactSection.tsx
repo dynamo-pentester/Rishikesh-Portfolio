@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, Mail, MapPin, Phone, Linkedin, Github } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import MagneticButton from '@/components/ui/MagneticButton';
-
+import { BranchRight, RedGlowOrb } from '@/components/decorations/SectionDecorations';
 export default function ContactSection() {
   const [formState, setFormState] = useState({ name: '', email: '', message: '' });
   const [focused, setFocused] = useState<string | null>(null);
@@ -20,6 +20,9 @@ export default function ContactSection() {
 
   return (
     <section id="contact" className="relative py-32 lg:py-48 overflow-hidden bg-card/30">
+      <BranchRight className="-top-4 right-0" />
+      <RedGlowOrb className="bottom-[25%] -right-20" />
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-glow-primary/10 via-glow-primary/5 to-transparent rounded-full blur-3xl" />
       </div>

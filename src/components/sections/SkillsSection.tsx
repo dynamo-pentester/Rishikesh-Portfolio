@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { useProfile } from '@/contexts/ProfileContext';
-
+import { BranchLeft, RedGlowOrb } from '@/components/decorations/SectionDecorations';
 function SkillBar({ name, level, delay }: { name: string; level: number; delay: number }) {
   return (
     <motion.div
@@ -57,6 +57,10 @@ export default function SkillsSection() {
 
   return (
     <section id="skills" className="relative py-32 lg:py-48 overflow-hidden bg-card/30">
+      {/* Decorative scenery */}
+      <BranchLeft className="top-10 -left-10" />
+      <RedGlowOrb className="bottom-[15%] -left-20" />
+
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-glow-primary/3 rounded-full blur-3xl" />

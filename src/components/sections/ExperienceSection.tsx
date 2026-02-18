@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Briefcase } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-
+import { BranchLeft, RedGlowOrb } from '@/components/decorations/SectionDecorations';
 const experiences = [
 
   {
@@ -115,6 +115,9 @@ const experiences = [
 export default function ExperienceSection() {
   return (
     <section id="experience" className="relative py-32 lg:py-48 overflow-hidden bg-card/30">
+      <BranchLeft className="top-0 -left-6" />
+      <RedGlowOrb className="top-[30%] -left-16" />
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-0 w-64 h-64 bg-glow-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-glow-secondary/5 rounded-full blur-3xl" />

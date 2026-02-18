@@ -33,7 +33,7 @@ export default function FallingParticles({ imageSrc, count = 20, blendMode = 'no
   }, [count]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-10" style={{ height: '100%', minHeight: '100vh' }}>
       {particles.map((p) => (
         <motion.img
           key={p.id}
@@ -49,13 +49,13 @@ export default function FallingParticles({ imageSrc, count = 20, blendMode = 'no
             mixBlendMode: blendMode,
           }}
           animate={{
-            y: ['0vh', '110vh'],
+            y: ['0vh', '300vh'],
             x: [0, p.swayAmount, -p.swayAmount / 2, p.swayAmount / 3, 0],
             rotate: [p.rotation, p.rotation + 360],
           }}
           transition={{
             y: {
-              duration: p.duration,
+              duration: p.duration * 2.5,
               repeat: Infinity,
               delay: p.delay,
               ease: 'linear',
