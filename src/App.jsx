@@ -1,7 +1,7 @@
 import { ReactLenis } from 'lenis/react';
 import Navbar from './components/UI/Navbar';
 import Cursor from './components/UI/Cursor';
-import ScrollSpy from './components/UI/Scrollspy';
+import ScrollSpy from './components/UI/ScrollSpy';
 
 import PageLoader from './components/UI/PageLoader';
 import Hero from './components/Hero';
