@@ -48,6 +48,16 @@ export default function Hero() {
       duration: 0.2,
     });
 
+    // Photo scaling and fade
+    tl.fromTo('.hero-photo', {
+      scale: 1.2,
+      filter: 'brightness(0) contrast(2)',
+    }, {
+      scale: 1,
+      filter: 'brightness(0.85) contrast(1.1)',
+      duration: 1,
+    }, 0);
+
     // Signature: swoops from large/below to center
     tl.fromTo(
       '.hero-signature',
@@ -71,15 +81,21 @@ export default function Hero() {
     );
 
     // Split words slide outward
-    tl.to('.hero-left-word', {
-      x: isMobile ? '-15vw' : '-8vw',
-      opacity: 0.5,
+    tl.fromTo('.hero-left-word', {
+      x: -50,
+      opacity: 0,
+    }, {
+      x: isMobile ? '-15vw' : '-12vw',
+      opacity: 0.6,
       duration: 0.8,
     }, 0.5);
 
-    tl.to('.hero-right-word', {
-      x: isMobile ? '15vw' : '8vw',
-      opacity: 0.5,
+    tl.fromTo('.hero-right-word', {
+      x: 50,
+      opacity: 0,
+    }, {
+      x: isMobile ? '15vw' : '12vw',
+      opacity: 0.6,
       duration: 0.8,
     }, 0.5);
 
@@ -94,13 +110,20 @@ export default function Hero() {
 
   return (
     <section id="hero" ref={containerRef}>
-      {/* Background image */}
+      {/* Background image - keeping the abstract one for atmosphere */}
       <div
         className="hero-bg"
         style={{
-          backgroundImage: 'url(/assets/hero-section.png)',
+          backgroundImage: 'url(/assets/hero_abstract.png)',
+          opacity: 0.4
         }}
       />
+
+      {/* Real Photo Layer */}
+      <div className="hero-photo-wrap">
+        <img src="/assets/me.jpg" alt="Rishikesh R" className="hero-photo" />
+        <div className="hero-scanner" />
+      </div>
 
       {/* Decorative corner brackets */}
       <div className="hero-bracket tl desktop-only" />
@@ -108,61 +131,28 @@ export default function Hero() {
       <div className="hero-bracket bl desktop-only" />
       <div className="hero-bracket br desktop-only" />
 
-      {/* Dot grid — top left */}
-      <div className="hero-dots desktop-only" style={{
-        position: 'absolute',
-        top: '8rem',
-        left: '5vw',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(6, 1fr)',
-        gap: '10px',
-        zIndex: 2,
-        opacity: 0.25,
-      }}>
+      {/* Dot grid */}
+      <div className="hero-dots desktop-only">
         {dots.map((_, i) => (
-          <div key={i} style={{
-            width: '3px', height: '3px',
-            borderRadius: '50%',
-            background: 'var(--gold)',
-          }} />
+          <div key={i} className="hero-dot" />
         ))}
       </div>
 
-      {/* Flag progress bar — bottom left */}
-      <div className="hero-flag desktop-only" style={{
-        position: 'absolute',
-        bottom: '6rem',
-        left: '5vw',
-        zIndex: 5,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-      }}>
-        <div style={{
-          width: '160px',
-          height: '1px',
-          background: 'linear-gradient(to right, #FF9933, rgba(255,255,255,0.3), #138808)',
-          opacity: 0.6,
-        }} />
-        <div style={{
-          width: '8px', height: '8px',
-          borderRadius: '50%',
-          background: 'var(--text-muted)',
-          border: '1px solid rgba(255,255,255,0.25)',
-          marginLeft: '20px',
-          marginTop: '-2px',
-        }} />
+      {/* Flag progress bar */}
+      <div className="hero-progress desktop-only">
+        <div className="hero-progress-line" />
+        <div className="hero-progress-dot" />
       </div>
 
-
       {/* Split identity text */}
-      <div className="hero-identity" style={{ zIndex: 2 }}>
-        {/* LEFT: BL4CK */}
-
-        {/* CENTER spacer for signature */}
-        <div style={{ flex: 1 }} />
-
-        {/* RIGHT: H34R7 */}
+      <div className="hero-identity">
+        <div className="hero-left-word hero-split-word desktop-only">
+          BL<span className="accent-num">4</span>CK
+        </div>
+        
+        <div className="hero-right-word hero-split-word desktop-only">
+          H<span className="accent-num">34</span>R<span className="accent-num" style={{ color: 'var(--green)' }}>7</span>
+        </div>
       </div>
 
       {/* Signature */}
@@ -171,7 +161,7 @@ export default function Hero() {
           src="/assets/signature.png"
           alt="Rishikesh R — Signature"
           className="hero-signature"
-          style={{ opacity: 0 }} // GSAP controls opacity
+          style={{ opacity: 0 }}
         />
       </div>
 

@@ -410,11 +410,39 @@ export default function Projects() {
                   transformOrigin: 'center center',
                 }}
                 onClick={() => openProject(p)}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = (e.clientX - rect.left) / rect.width - 0.5;
+                  const y = (e.clientY - rect.top) / rect.height - 0.5;
+                  const img = e.currentTarget.querySelector('.fc-card-img');
+                  if (img) {
+                    gsap.to(img, {
+                      x: x * 30,
+                      y: y * 30,
+                      scale: 1.1,
+                      duration: 0.6,
+                      ease: 'power2.out'
+                    });
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const img = e.currentTarget.querySelector('.fc-card-img');
+                  if (img) {
+                    gsap.to(img, {
+                      x: 0,
+                      y: 0,
+                      scale: 1,
+                      duration: 0.8,
+                      ease: 'power3.out'
+                    });
+                  }
+                }}
               >
                 {/* ── Full-bleed project image ── */}
                 <img
                   src={p.img}
                   alt={p.title}
+                  className="fc-card-img"
                   style={{
                     position: 'absolute',
                     inset: 0,

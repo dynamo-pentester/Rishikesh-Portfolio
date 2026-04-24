@@ -67,23 +67,26 @@ function TiltCard({ skill, index }) {
       style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: '1000px' }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="skill-card"
+      className="skill-card group relative overflow-hidden"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.7, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
+      {/* Spotlight effect */}
+      <div 
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(200, 169, 110, 0.1), transparent 40%)`,
+        }}
+      />
+
       <span className="skill-card-icon">{skill.icon}</span>
       <h3>{skill.title}</h3>
       <p>{skill.desc}</p>
 
       {/* Gold shimmer on top edge */}
-      <div style={{
-        position: 'absolute',
-        top: 0, left: 0, right: 0,
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(200,169,110,0.25), transparent)',
-      }} />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[rgba(200,169,110,0.25)] to-transparent" />
     </motion.div>
   );
 }
