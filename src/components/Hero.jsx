@@ -56,32 +56,27 @@ export default function Hero() {
         scale: isMobile ? 2.2 : 3.5,
         y: isMobile ? 120 : 220,
         rotate: -6,
-        filter: 'blur(8px)'
+        filter: 'brightness(3) contrast(1.5) blur(8px)'
       },
       {
         opacity: 1,
         scale: 1,
         y: 0,
         rotate: 0,
-        filter: 'blur(0px)',
+        filter: 'brightness(3) contrast(1.5) blur(0px)',
         duration: 1,
         ease: 'power3.out',
       },
       0.1
     );
 
-    // Split words slide outward
-    tl.to('.hero-left-word', {
-      x: isMobile ? '-15vw' : '-8vw',
-      opacity: 0.5,
-      duration: 0.8,
-    }, 0.5);
-
-    tl.to('.hero-right-word', {
-      x: isMobile ? '15vw' : '8vw',
-      opacity: 0.5,
-      duration: 0.8,
-    }, 0.5);
+    // Fade in brackets and dots on scroll
+    tl.from('.hero-bracket', {
+      opacity: 0,
+      scale: 0.8,
+      duration: 0.6,
+      stagger: 0.05,
+    }, 0.3);
 
     // Parallax scale on BG
     tl.to('.hero-bg', {
@@ -98,7 +93,7 @@ export default function Hero() {
       <div
         className="hero-bg"
         style={{
-          backgroundImage: 'url(/assets/hero-section.png)',
+          backgroundImage: 'url(/assets/final.png)',
         }}
       />
 
@@ -123,7 +118,7 @@ export default function Hero() {
           <div key={i} style={{
             width: '3px', height: '3px',
             borderRadius: '50%',
-            background: 'var(--gold)',
+            background: 'rgba(255,255,255,0.6)',
           }} />
         ))}
       </div>
@@ -147,7 +142,7 @@ export default function Hero() {
         <div style={{
           width: '8px', height: '8px',
           borderRadius: '50%',
-          background: 'var(--text-muted)',
+          background: 'rgba(100,100,100,1)',
           border: '1px solid rgba(255,255,255,0.25)',
           marginLeft: '20px',
           marginTop: '-2px',

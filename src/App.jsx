@@ -1,41 +1,26 @@
-import { ReactLenis } from 'lenis/react';
-import Navbar from './components/UI/Navbar';
-import Cursor from './components/UI/Cursor';
-import ScrollSpy from './components/UI/ScrollSpy';
-
-import PageLoader from './components/UI/PageLoader';
 import Hero from './components/Hero';
+import Navbar from './components/UI/Navbar';
+import Work from './components/Work';
 import About from './components/About';
-import Carousel from './components/Carousel';
-import Projects from './components/Projects';
-import Skills from './components/Skills';
-import { Experience, Credentials } from './components/Experience';
+import Services from './components/Services';
+import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
+import Footer from './components/Footer';
 
 function App() {
   return (
-    <ReactLenis root>
-      <PageLoader />
-
-      <div className="app-container">
-        <Cursor />
-        <Navbar />
-        <ScrollSpy />
-
-
-        <main>
-          <Hero />
-          <About />
-          <Carousel />
-          <Projects />
-          <Skills />
-          <Experience />
-          <Credentials />
-        </main>
-
-        <Contact />
-      </div>
-    </ReactLenis>
+    <div className="app-root grain min-h-screen bg-[#0a0a0a] text-white">
+      <Navbar />
+      <main>
+        <Hero />
+        <Work />
+        <About />
+        <Services />
+        <Testimonials />
+      </main>
+      <Contact />
+      <Footer />
+    </div>
   );
 }
 
