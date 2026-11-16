@@ -6,6 +6,8 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { heightAt, SEA } from './noise';
 import { store } from './store';
 
@@ -17,18 +19,21 @@ export const WAYPOINTS = {
   spawn: [0, 62], campfire: [6, -64],
 };
 
-// One camera stop per page section: position, altitude, look-at, fog density.
+// One camera stop per page section: position, altitude, look-at, fog density. The camera rests at a stop
+// for the whole act and only travels in the gap between two acts.
 const STOPS = [
-  { p: [0, 104], alt: 6.5, l: [0, -60], fog: 0.0085 },
-  { p: [-6, 46], alt: 17, l: [2, -14], fog: 0.011 },
-  { p: [46, 6], alt: 13, l: [78, -52], fog: 0.012 },
-  { p: [80, -62], alt: 16, l: [34, -112], fog: 0.012 },
-  { p: [24, -108], alt: 20, l: [-44, -84], fog: 0.011 },
-  { p: [4, -20], alt: 150, l: [4, -20.5], fog: 0.0024 },
+  { p: [0, 104], alt: 6.5, l: [0, -60], fog: 0.0085 },            // the gate
+  { p: [5, 50], alt: 4.4, l: [-30, -8], fog: 0.012 },             // the warrior: through the gate, at grass height
+  { p: [-4, 34], alt: 15, l: [2, -14], fog: 0.011 },              // the scrolls: over the shrine stones
+  { p: [46, 6], alt: 11, l: [78, -52], fog: 0.012 },              // the arsenal
+  { p: [80, -62], alt: 14, l: [34, -112], fog: 0.012 },           // war record
+  { p: [17.5, -52.5], alt: 3.6, l: [6, -64], ly: 2.2, fog: 0.013 }, // the resting place
 ];
+const GRAB = 0.467, HOME = 1.133;   // seconds into the draw / sheathe clips where the hand meets the hilt
 
 const smooth = (t) => t * t * (3 - 2 * t);
 const mix = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a = 0, b = 1) => Math.min(Math.max(v, a), b);
 const seeded = (seed) => () => {
   seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
   let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
@@ -220,6 +225,8 @@ export class World {
     this.buildSky();
     this.buildGround();
     this.buildScatter();
+    this.buildGrass();
+    this.buildGraves();
     this.buildPetals();
     this.buildMarkers();
     this.buildGuardian();
@@ -246,9 +253,9 @@ export class World {
     const S = 256;
     const fine = tileNoise(S, 8, 5, 3), pools = tileNoise(S, 3, 4, 9), ripple = tileNoise(S, 6, 3, 21);
     this.maps = {
-      stoneNormal: normalMap(fine, S, 9, 70),
+      stoneNormal: normalMap(fine, S, 6, 40),
       // wet stone: standing water (very smooth) pools in the low-frequency dips
-      wet: dataTexture(S, (x, y, i) => { const v = smooth(Math.min(Math.max((pools[i] - 0.44) * 6, 0), 1)); const g = (0.07 + v * 0.5 + fine[i] * 0.12) * 255; return [255, g, 20]; }, 9),
+      wet: dataTexture(S, (x, y, i) => { const v = smooth(Math.min(Math.max((pools[i] - 0.44) * 6, 0), 1)); const g = (0.74 - v * 0.42 + fine[i] * 0.1) * 255; return [255, g, 20]; }, 9),
       rockNormal: normalMap(fine, S, 7, 2),
       ripple: normalMap(ripple, S, 5, 46),
     };
@@ -290,10 +297,21 @@ export class World {
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) pos.setY(i, heightAt(pos.getX(i), pos.getZ(i)));
     geo.computeVertexNormals();
-    this.groundMat = new THREE.MeshStandardMaterial({ color: 0x15100f, roughness: 1, metalness: 0.1, roughnessMap: this.maps.wet, normalMap: this.maps.stoneNormal, normalScale: new THREE.Vector2(1.3, 1.3), envMapIntensity: 1.1 });
+    this.groundMat = new THREE.MeshStandardMaterial({ color: 0x120c0b, roughness: 1, metalness: 0, roughnessMap: this.maps.wet, normalMap: this.maps.stoneNormal, normalScale: new THREE.Vector2(0.45, 0.45), envMapIntensity: 0.6 });
     this.scene.add(new THREE.Mesh(geo, this.groundMat));
 
-    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.09, metalness: 0.3, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.55, 0.55), envMapIntensity: 1.3 });
+    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.09, metalness: 0.3, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.9, 0.9), envMapIntensity: 1.5 });
+    // two layers of ripples sliding across each other, so the surface reads as a current
+    this.waterMat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = this.time.uTime;
+      shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uTime;')
+        .replace('#include <normal_fragment_maps>', `
+          vec3 mapA = texture2D(normalMap, vNormalMapUv + uTime * vec2(0.035, 0.11)).xyz * 2.0 - 1.0;
+          vec3 mapB = texture2D(normalMap, vNormalMapUv * 0.61 + uTime * vec2(-0.05, 0.07)).xyz * 2.0 - 1.0;
+          vec3 mapN = normalize(vec3(mapA.xy + mapB.xy, mapA.z * mapB.z));
+          mapN.xy *= normalScale;
+          normal = normalize(tbn * mapN);`);
+    };
     const water = new THREE.Mesh(new THREE.PlaneGeometry(SIZE, SIZE), this.waterMat);
     water.rotation.x = -Math.PI / 2; water.position.y = SEA + 0.06;
     this.scene.add(water);
@@ -323,41 +341,104 @@ export class World {
       const k = seen.get(key); rp.setXYZ(i, rp.getX(i) * k, rp.getY(i) * k * 0.72, rp.getZ(i) * k);
     }
     rockGeo.computeVertexNormals();
-    const rockMat = new THREE.MeshStandardMaterial({ color: 0x1b1718, roughness: 0.55, metalness: 0.15, normalMap: this.maps.rockNormal, flatShading: true });
-    this.place(new THREE.InstancedMesh(rockGeo, rockMat, this.small ? 200 : 420), this.small ? 200 : 420, 31, 70, (d, x, y, z, r) => {
+    const rockMat = new THREE.MeshStandardMaterial({ color: 0x1b1718, roughness: 0.92, metalness: 0, normalMap: this.maps.rockNormal });
+    this.place(new THREE.InstancedMesh(rockGeo, rockMat, 70), 70, 31, 80, (d, x, y, z, r) => {
       if (y <= SEA + 0.1) return false;
-      const s = r() < 0.06 ? 2.2 + r() * 2.4 : 0.25 + r() * 0.9;
-      d.position.set(x, y + s * 0.15, z); d.rotation.set(r() * 6, r() * 6, r() * 6); d.scale.setScalar(s);
-    });
-
-    // grass: three crossed cards with blades drawn on a canvas
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const g = c.getContext('2d'), gr = seeded(8);
-    for (let i = 0; i < 46; i++) {
-      const x = 8 + gr() * 112, lean = (gr() - 0.5) * 46, h = 50 + gr() * 74;
-      g.strokeStyle = `rgb(${50 + gr() * 50},${24 + gr() * 26},${26 + gr() * 22})`; g.lineWidth = 1.2 + gr() * 2.2; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(x, 128); g.quadraticCurveTo(x + lean * 0.3, 128 - h * 0.6, x + lean, 128 - h); g.stroke();
-    }
-    const grassTex = new THREE.CanvasTexture(c); grassTex.colorSpace = THREE.SRGBColorSpace;
-    const card = new THREE.PlaneGeometry(1, 1); card.translate(0, 0.5, 0);
-    const cards = [0, 1, 2].map((k) => card.clone().rotateY((k * Math.PI) / 3));
-    const grassGeo = new THREE.BufferGeometry();
-    for (const name of ['position', 'normal', 'uv']) {
-      const size = name === 'uv' ? 2 : 3, arr = new Float32Array(cards.length * 4 * size);
-      cards.forEach((q, k) => arr.set(q.attributes[name].array, k * 4 * size));
-      grassGeo.setAttribute(name, new THREE.BufferAttribute(arr, size));
-    }
-    grassGeo.setIndex(cards.flatMap((q, k) => [...q.index.array].map((i) => i + k * 4)));
-    const grassMat = windPatch(new THREE.MeshStandardMaterial({ map: grassTex, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.9 }), 0.16, this.time);
-    this.place(new THREE.InstancedMesh(grassGeo, grassMat, this.small ? 700 : 1900), this.small ? 700 : 1900, 47, 60, (d, x, y, z, r) => {
-      if (y <= SEA + 0.25) return false;
-      d.position.set(x, y - 0.05, z); d.rotation.set(0, r() * 6.28, 0); d.scale.set(0.9 + r() * 0.9, 0.7 + r() * 1.3, 0.9 + r() * 0.9);
+      const s = 1.3 + r() * 2.6;
+      if (Math.abs(x) < 7 && z > 36) return false;
+      d.position.set(x, y - s * 0.12, z); d.rotation.set(r() * 6, r() * 6, r() * 6); d.scale.set(s, s * 0.7, s);
     });
 
     const petalMat = new THREE.MeshStandardMaterial({ color: 0xd9627f, roughness: 0.6, side: THREE.DoubleSide, emissive: 0x2a0810 });
-    this.place(new THREE.InstancedMesh(new THREE.PlaneGeometry(0.26, 0.15), petalMat, this.small ? 700 : 1600), this.small ? 700 : 1600, 63, 55, (d, x, y, z, r) => {
+    this.place(new THREE.InstancedMesh(new THREE.PlaneGeometry(0.26, 0.15), petalMat, 500), 500, 63, 55, (d, x, y, z, r) => {
       d.position.set(x, Math.max(y, SEA + 0.06) + 0.04, z); d.rotation.set(-Math.PI / 2 + (r() - 0.5) * 0.3, 0, r() * 6.28); d.scale.setScalar(0.7 + r() * 0.9);
     });
+  }
+
+  // Susuki — pampas grass. Every instance is a tuft of real curved blades with two pale plumes above it,
+  // lit matte, and bent after instancing so one gust rolls across the whole field.
+  buildGrass() {
+    const r = seeded(8), pos = [], col = [], bend = [], idx = [];
+    const strip = (bx, bz, height, lean, dir, w, plume) => {
+      const segs = plume ? 6 : 4, base = pos.length / 3, cx = Math.cos(dir), cz = Math.sin(dir), tone = 0.75 + r() * 0.5;
+      for (let s = 0; s <= segs; s++) {
+        const t = s / segs, off = lean * t * t;
+        const ww = plume ? 0.012 + w * Math.sin(Math.PI * clamp((t - 0.5) / 0.5)) ** 0.7 : w * (1 - t * 0.9);
+        const k = plume ? smooth(clamp((t - 0.45) / 0.2)) : t;
+        for (const side of [-1, 1]) {
+          pos.push(bx + cx * off - cz * ww * side, height * t, bz + cz * off + cx * ww * side);
+          if (plume) col.push(mix(0.2, 0.86, k) * tone, mix(0.12, 0.66, k) * tone, mix(0.1, 0.58, k) * tone);
+          else col.push(mix(0.035, 0.36, k) * tone, mix(0.02, 0.2, k) * tone, mix(0.02, 0.15, k) * tone);
+          bend.push((height * t) / 2);
+        }
+        if (s < segs) { const a = base + s * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      }
+    };
+    for (let i = 0; i < 13; i++) { const a = r() * 6.283, d = Math.sqrt(r()) * 0.8; strip(Math.cos(a) * d, Math.sin(a) * d, 0.75 + r() * 0.75, 0.25 + r() * 0.5, r() * 6.283, 0.05 + r() * 0.035, false); }
+    for (let i = 0; i < 3; i++) { const a = r() * 6.283, d = r() * 0.5; strip(Math.cos(a) * d, Math.sin(a) * d, 1.55 + r() * 0.6, 0.2 + r() * 0.3, r() * 6.283, 0.1 + r() * 0.04, true); }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    geo.setAttribute('aBend', new THREE.Float32BufferAttribute(bend, 1));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(new Float32Array(pos.length).map((_, i) => (i % 3 === 1 ? 1 : 0)), 3));
+    geo.setIndex(idx);
+    const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    mat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = this.time.uTime;
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nuniform float uTime; attribute float aBend;')
+        .replace('#include <project_vertex>', `
+          vec4 gp = instanceMatrix * vec4(transformed, 1.0);
+          float gust = sin(uTime * 0.8 - gp.x * 0.09 - gp.z * 0.05) * 0.55 + sin(uTime * 0.31 - gp.x * 0.027 + gp.z * 0.036) * 0.75;
+          float flutter = sin(uTime * 2.7 + gp.x * 1.3 + gp.z * 1.7) * 0.1;
+          float b = aBend * aBend * instanceMatrix[1][1];
+          gp.x += (0.45 + gust * 0.5 + flutter) * b * 0.55;
+          gp.z += (0.2 + gust * 0.24 - flutter) * b * 0.55;
+          gp.y -= (0.3 + gust * 0.3) * b * 0.16;
+          vec4 mvPosition = modelViewMatrix * gp;
+          gl_Position = projectionMatrix * mvPosition;`);
+    };
+    // the field: thick around every place the camera rests, with the approach to the gate kept clear as a path
+    const fields = [[0, 74, 40, 0.24], [-14, 22, 46, 0.24], [2, -14, 40, 0.14], [62, -22, 44, 0.14], [56, -88, 44, 0.12], [8, -62, 30, 0.12]];
+    const keep = Object.values(WAYPOINTS), count = this.small ? 4200 : 12000;
+    const mesh = new THREE.InstancedMesh(geo, mat, count), rr = seeded(47);
+    let n = 0, tries = 0;
+    while (n < count && tries++ < count * 6) {
+      let pick = rr(), f = fields[0];
+      for (const c of fields) { if (pick < c[3]) { f = c; break; } pick -= c[3]; }
+      const a = rr() * 6.2832, d = Math.sqrt(rr()) * f[2], x = f[0] + Math.cos(a) * d, z = f[1] + Math.sin(a) * d, y = heightAt(x, z);
+      if (y <= SEA + 0.3 || (Math.abs(x) < 2.4 && z > 38) || keep.some(([kx, kz]) => Math.hypot(kx - x, kz - z) < 3.2)) continue;
+      if (Math.hypot(x - 12, z + 58) < 9) continue;                         // the clearing before the grave
+      const s = 0.85 + rr() * 0.6;
+      this.dummy.position.set(x, y - 0.06, z); this.dummy.rotation.set(0, 0, 0); this.dummy.scale.set(s * (0.8 + rr() * 0.6), s, s * (0.8 + rr() * 0.6));
+      this.dummy.updateMatrix(); mesh.setMatrixAt(n++, this.dummy.matrix);
+    }
+    mesh.count = n; mesh.instanceMatrix.needsUpdate = true; mesh.frustumCulled = false;
+    this.scene.add(mesh);
+  }
+
+  // Old graves along the approach: three stacked stones each, leaning with age, and wooden sotoba boards behind some.
+  buildGraves() {
+    const box = (w, h, d, y, rad) => new RoundedBoxGeometry(w, h, d, 2, rad).translate(0, y + h / 2, 0);
+    const geo = mergeGeometries([box(1.15, 0.24, 1.15, 0, 0.05), box(0.82, 0.3, 0.82, 0.24, 0.05), box(0.46, 1.25, 0.46, 0.54, 0.06), box(0.56, 0.1, 0.56, 1.79, 0.04)]);
+    const stone = new THREE.MeshStandardMaterial({ color: 0x4a4443, roughness: 0.95, metalness: 0, normalMap: this.maps.rockNormal, normalScale: new THREE.Vector2(0.8, 0.8) });
+    const wood = new THREE.MeshStandardMaterial({ color: 0x2a1a14, roughness: 0.9 });
+    const r = seeded(77), spots = [];
+    for (let z = 96; z > 12; z -= 5.5 + r() * 5) for (const side of [-1, 1]) if (r() < 0.8) spots.push([side * (4.2 + r() * 7), z + r() * 3]);
+    for (let i = 0; i < 9; i++) spots.push([-30 + (r() - 0.5) * 26, -8 + (r() - 0.5) * 24]);
+    const graves = new THREE.InstancedMesh(geo, stone, spots.length), boards = new THREE.InstancedMesh(new THREE.BoxGeometry(0.11, 2.5, 0.025).translate(0, 1.25, 0), wood, spots.length * 2);
+    let b = 0;
+    spots.forEach(([x, z], i) => {
+      const y = heightAt(x, z), s = 0.85 + r() * 0.5, rot = Math.atan2(-x, 6) + (r() - 0.5) * 0.5;
+      this.dummy.position.set(x, y - 0.08, z); this.dummy.rotation.set((r() - 0.5) * 0.12, rot, (r() - 0.5) * 0.12); this.dummy.scale.setScalar(s);
+      this.dummy.updateMatrix(); graves.setMatrixAt(i, this.dummy.matrix);
+      for (let k = 0; k < 2; k++) if (r() < 0.6) {
+        this.dummy.position.set(x - Math.sin(rot) * 0.5 + (k - 0.5) * 0.4, y - 0.1, z - Math.cos(rot) * 0.5); this.dummy.rotation.set((r() - 0.5) * 0.2, rot, (r() - 0.5) * 0.14); this.dummy.scale.setScalar(0.8 + r() * 0.35);
+        this.dummy.updateMatrix(); boards.setMatrixAt(b++, this.dummy.matrix);
+      }
+    });
+    boards.count = b; graves.frustumCulled = boards.frustumCulled = false;
+    this.scene.add(graves, boards);
   }
 
   buildPetals() {
@@ -380,7 +461,7 @@ export class World {
       const g = new THREE.Group();
       g.position.set(x, heightAt(x, z), z);
       let boost = { value: 0 };
-      if (id !== 'spawn') {
+      if (id !== 'spawn' && id !== 'campfire') {
         const a = new THREE.Mesh(body, stone); a.position.y = 2.5;
         const b = new THREE.Mesh(cap, stone); b.position.y = 5.15;
         const c = new THREE.Mesh(foot, stone); c.position.y = 0.2;
@@ -417,6 +498,36 @@ export class World {
         this.scene.add(light); this.lanterns.push(light);
       }
     });
+
+    // Lanterns light the approach and the grave.
+    loader.load('/models/lantern.glb', (gltf) => {
+      if (this.disposed) return;
+      gltf.scene.traverse((o) => { if (o.isMesh && o.material.emissiveMap) { o.material.emissive.set(0xff7a2a); o.material.emissiveIntensity = 2.6; } });
+      for (const [x, z, lit] of [[-3.6, 90, 1], [3.6, 90, 0], [-3.6, 76, 0], [3.6, 76, 1], [-3.4, 47, 1], [3.4, 47, 0], [9.5, -60.5, 1]]) {
+        const l = gltf.scene.clone(); l.position.set(x, heightAt(x, z) - 0.05, z); l.scale.setScalar(2.1); l.rotation.y = x * 0.4;
+        this.scene.add(l);
+        if (!lit && this.small) continue;
+        const light = new THREE.PointLight(0xff5a14, 20, 24, 1.9); light.position.set(x, l.position.y + 2.7, z);
+        this.scene.add(light); this.lanterns.push(light);
+      }
+    });
+
+    // The resting place: grave, paper umbrella and old tree; his sword and helmet are set down in front of it once he is loaded.
+    loader.load('/models/finale.glb', (gltf) => {
+      if (this.disposed) return;
+      const [x, z] = WAYPOINTS.campfire, rest = (this.rest = new THREE.Group());
+      rest.position.set(x, heightAt(x, z) + 0.15, z); rest.rotation.y = Math.PI / 4;
+      gltf.scene.scale.setScalar(15); rest.add(gltf.scene);
+      const candle = new THREE.PointLight(0xff8a3c, 16, 16, 1.8); candle.position.set(0.4, 1.6, 2.2); rest.add(candle);
+      this.scene.add(rest); rest.updateMatrixWorld(true);
+      this.restGround = (lx, lz) => {
+        const from = rest.localToWorld(new THREE.Vector3(lx, 30, lz));
+        const hit = new THREE.Raycaster(from, new THREE.Vector3(0, -1, 0)).intersectObject(gltf.scene, true)[0];
+        return hit ? rest.worldToLocal(hit.point).y : 0;
+      };
+      this.dressGrave();
+    });
+    loader.load('/models/kabuto.glb', (gltf) => { if (this.disposed) return; this.kabuto = gltf.scene; this.dressGrave(); });
 
     loader.load('/models/sakura_tree.glb', (gltf) => {
       if (this.disposed) return;
@@ -472,22 +583,38 @@ export class World {
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
     scene.add(floor);
     this.heroCam = new THREE.PerspectiveCamera(26, 1, 0.1, 60);
-    this.hero = { arm: null, model: null, mats: [floorMat], angle: 0.72, alpha: 1 };
+    this.hero = { model: null, mats: [floorMat], alpha: 1, draw: 0, idle: 0, slash: 0, sheathe: 0, struck: false };
+  }
+
+  // His katana planted in the earth and his helmet set down beside it.
+  dressGrave() {
+    if (!this.rest || !this.kabuto || !this.hero.model || this.dressed) return;
+    this.dressed = true;
+    const src = this.hero.model.getObjectByName('KatanaHand'), blade = src.clone();
+    src.getWorldScale(blade.scale); blade.visible = true;
+    blade.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.opacity = 1; o.material.transparent = false; } });
+    blade.position.set(0.95, this.restGround(0.95, 2.3) + 0.7, 2.3); blade.rotation.set(-Math.PI / 2 + 0.1, 0, 0.14);
+    this.kabuto.position.set(0.15, this.restGround(0.15, 2.6) + 0.02, 2.6); this.kabuto.rotation.set(-0.12, 0.5, 0.05); this.kabuto.scale.setScalar(1.25);
+    this.rest.add(blade, this.kabuto);
   }
 
   loadGuardian() {
-    this.loader.load('/models/samurai.glb', (gltf) => {
+    this.loader.load('/models/guardian.glb', (gltf) => {
       if (this.disposed) return;
-      const model = gltf.scene;
+      const model = gltf.scene, h = this.hero;
       model.traverse((o) => {
         if (!o.isMesh) return;
-        o.castShadow = o.receiveShadow = true;
-        o.geometry.deleteAttribute('tangent');
-        (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => { if (!this.hero.mats.includes(m)) this.hero.mats.push(m); });
+        o.castShadow = o.receiveShadow = true; o.frustumCulled = false;
+        (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => { if (!h.mats.includes(m)) h.mats.push(m); });
       });
-      this.hero.model = model;
-      this.hero.arm = model.getObjectByName('SwordArm');
+      h.mixer = new THREE.AnimationMixer(model);
+      h.act = {};
+      for (const clip of gltf.animations) { const a = h.mixer.clipAction(clip); a.play(); a.setEffectiveWeight(0); h.act[clip.name] = a; }
+      h.w = { Draw: 1, Idle: 0, Slash: 0, Sheathe: 0 };
+      h.inHand = model.getObjectByName('KatanaHand'); h.atHip = model.getObjectByName('KatanaSheathed');
+      h.model = model;
       this.heroScene.add(model);
+      this.dressGrave();
     });
   }
 
@@ -551,21 +678,46 @@ export class World {
     return Math.min(Math.max(p, 0), STOPS.length - 1);
   }
 
-  updateGuardian(t, dt) {
-    const h = this.hero, q = store.hero.q;
-    const alpha = 1 - smooth(Math.min(q * 1.5, 1));
+  // The whole opening is one take driven by the scroll: he stands with a hand on the hilt, draws as you start to move,
+  // settles into his guard, and strikes. The strike itself always plays at full speed, and the page splits on its impact.
+  // He returns once, before the last act, to put the sword away.
+  updateGuardian(t, dt, p) {
+    const h = this.hero, hp = store.hero.p, q = store.hero.q;
+    const ending = smooth(clamp((p - 4.36) / 0.06)) * (1 - smooth(clamp((p - 4.62) / 0.08)));
+    const alpha = p < 2 ? 1 - smooth(clamp(q * 1.5)) : ending;
     this.heroPass.enabled = !!h.model && alpha > 0.01;
     if (!this.heroPass.enabled) return;
-    const target = store.hero.cut ? -2.55 : 0.72;                       // the strike is fast, the return to guard slow
-    h.angle += (target - h.angle) * (this.reduced ? 1 : 1 - Math.exp(-dt * (store.hero.cut ? 34 : 4)));
-    h.arm.rotation.z = h.angle;
+    const ease = (rate) => (this.reduced ? 1 : 1 - Math.exp(-dt * rate));
+    let want = 'Draw', hand = false;
+    if (p >= 2) {
+      want = 'Sheathe';
+      h.sheathe += (clamp((p - 4.4) / 0.2) * h.act.Sheathe.getClip().duration - h.sheathe) * ease(5);
+      hand = h.sheathe < HOME; h.struck = false; h.slash = 0;
+    } else {
+      h.draw += (clamp((hp - 0.05) / 0.27) * h.act.Draw.getClip().duration - h.draw) * ease(7);
+      const strike = hp > 0.4;
+      if (strike && !h.striking && !h.struck) { h.striking = true; h.slash = 0.42; }
+      if (!strike && hp < 0.34) { h.striking = false; h.slash = 0; if (h.struck) { h.struck = false; store.hero.onCut?.(false); } }
+      if (h.striking || h.struck) {
+        want = 'Slash';
+        h.slash = Math.min(h.slash + dt * 1.25, h.act.Slash.getClip().duration - 0.02);
+        if (!h.struck && h.slash > 1.05) { h.struck = true; h.striking = false; store.hero.onCut?.(true); }
+      } else if (hp > 0.33) want = 'Idle';
+      hand = want !== 'Draw' || h.draw > GRAB;
+    }
+    h.idle = (h.idle + dt) % h.act.Idle.getClip().duration;
+    const times = { Draw: h.draw, Idle: h.idle, Slash: h.slash, Sheathe: h.sheathe };
+    let total = 0;
+    for (const k in h.w) { h.w[k] += ((k === want ? 1 : 0) - h.w[k]) * ease(k === 'Slash' || want === 'Slash' ? 16 : 6); total += h.w[k]; }
+    for (const k in h.w) { h.act[k].time = times[k]; h.act[k].setEffectiveWeight(h.w[k] / total); }
+    h.mixer.update(0);
+    h.inHand.visible = hand; h.atHip.visible = !hand;
     if (alpha !== h.alpha) { h.alpha = alpha; h.mats.forEach((m) => { m.transparent = m.alphaMap ? true : alpha < 1; m.opacity = alpha; }); }
-    const sway = this.reduced ? 0 : Math.sin(t * 0.7);
-    h.model.rotation.y = -0.22 + sway * 0.03 + store.pointer.x * 0.1;
+    h.model.rotation.y = -0.22 + (this.reduced ? 0 : Math.sin(t * 0.7) * 0.02) + store.pointer.x * 0.08;
     this.glint.position.set(Math.sin(t * 0.55) * 2.2 - 0.4, 2.2 + Math.cos(t * 0.4) * 0.5, 1.6);   // a slow travelling highlight on the steel
     const wide = innerWidth > 900;
-    this.heroCam.position.set(0, 1.12, (wide ? 5.6 : 9.4) - q * 2.4);
-    this.heroCam.lookAt(0, 1.12, 0);
+    this.heroCam.position.set(0, 1.08, (wide ? 6.3 : 10.2) - (p < 2 ? q * 2.2 : 0));
+    this.heroCam.lookAt(0, 1.08, 0);
   }
 
   loop() {
@@ -577,20 +729,20 @@ export class World {
 
     const p = this.progress();
     const i = Math.min(Math.floor(p), STOPS.length - 2);
-    const f = smooth(Math.min(Math.max(p - i, 0), 1));
+    const f = smooth(clamp((p - i - 0.36) / 0.28));   // hold through the act, travel only in the gap between acts
     const a = STOPS[i], b = STOPS[i + 1];
     const px = mix(a.p[0], b.p[0], f), pz = mix(a.p[1], b.p[1], f);
     let lx = mix(a.l[0], b.l[0], f), lz = mix(a.l[1], b.l[1], f);
     const fw = store.focus && WAYPOINTS[store.focus];
-    if (fw && p > 0.5 && p < 2) { lx = mix(lx, fw[0], 0.7); lz = mix(lz, fw[1], 0.7); }
-    lx += store.pointer.x * 4;
+    if (fw && p > 1.6 && p < 2.6) { lx = mix(lx, fw[0], 0.7); lz = mix(lz, fw[1], 0.7); }
+    lx += store.pointer.x * 1.2;
 
-    const k = this.first || this.reduced ? 1 : 1 - Math.exp(-dt * 3.2);
+    const k = this.first || this.reduced ? 1 : 1 - Math.exp(-dt * 1.7);
     this.first = false;
     this.cam.pos.lerp(this.tmp.set(px, Math.max(heightAt(px, pz), 0) + mix(a.alt, b.alt, f), pz), k);
-    this.cam.look.lerp(this.tmp.set(lx, heightAt(lx, lz) + 3, lz), k);
+    this.cam.look.lerp(this.tmp.set(lx, heightAt(lx, lz) + mix(a.ly ?? 3, b.ly ?? 3, f), lz), k);
     this.scene.fog.density = mix(this.scene.fog.density, mix(a.fog, b.fog, f), k);
-    this.camera.position.copy(this.cam.pos).setY(this.cam.pos.y + (this.reduced ? 0 : Math.sin(t * 0.6) * 0.2));
+    this.camera.position.copy(this.cam.pos).setY(this.cam.pos.y + (this.reduced ? 0 : Math.sin(t * 0.45) * 0.08));
     this.camera.lookAt(this.cam.look);
 
     const dx = this.cam.look.x - this.cam.pos.x, dz = this.cam.look.z - this.cam.pos.z;
@@ -599,9 +751,8 @@ export class World {
     store.region = Math.round(p);
 
     this.corona.quaternion.copy(this.camera.quaternion);
-    this.waterMat.normalMap.offset.set(t * 0.006, t * 0.004);
     this.petalMat.uniforms.uCam.value.copy(this.camera.position);
-    this.lanterns.forEach((l, n) => { l.intensity = 26 * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
+    this.lanterns.forEach((l, n) => { l.intensity = 22 * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
 
     const labels = [];
     for (const m of this.markers) {
@@ -614,7 +765,7 @@ export class World {
     store.labels = labels;
     store.ready = true;
 
-    this.updateGuardian(t, dt);
+    this.updateGuardian(t, dt, p);
     this.composer.render(dt);
   }
 

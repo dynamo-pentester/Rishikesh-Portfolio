@@ -30,8 +30,8 @@ function App() {
       <Cursor />
       <main>
         <Spawn />
-        <QuestLog />
         <Character />
+        <QuestLog />
         <Disciplines />
         <Trophies />
         <Campfire />

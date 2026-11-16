@@ -6,8 +6,8 @@ export const store = {
   coords: { x: 0, y: 0, alt: 0 },
   region: 0,
   labels: [],         // [{ id, x, y, visible }] projected marker positions
-  hero: { q: 0, cut: false }, // opening shot: how far the halves have parted, and whether the blade has fallen
+  hero: { p: 0, q: 0, onCut: null }, // opening shot: scroll through the pin, how far the halves have parted, and the world's call when the blade lands
   ready: false,
 };
 
-export const REGIONS = ['The gate', 'The scrolls', 'The warrior', 'The arsenal', 'War record', 'Signal fire'];
+export const REGIONS = ['The gate', 'The warrior', 'The scrolls', 'The arsenal', 'War record', 'The resting place'];

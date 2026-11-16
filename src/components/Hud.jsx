@@ -6,14 +6,14 @@ import { sound } from '../world/audio';
 const pad = (n) => String(n).padStart(2, '0');
 const POINTS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const DEG = 3; // px per degree on the compass strip
-const LABELS = { spawn: 'The gate', campfire: 'Signal fire', ...Object.fromEntries(projects.map((p) => [p.id, p.title])) };
+const LABELS = { spawn: 'The gate', campfire: 'The resting place', ...Object.fromEntries(projects.map((p) => [p.id, p.title])) };
 const TRAVEL = [
   { href: '#spawn', label: 'The gate' },
-  { href: '#quests', label: 'The scrolls' },
   { href: '#character', label: 'The warrior' },
+  { href: '#quests', label: 'The scrolls' },
   { href: '#disciplines', label: 'The arsenal' },
   { href: '#trophies', label: 'War record' },
-  { href: '#campfire', label: 'Signal fire' },
+  { href: '#campfire', label: 'The resting place' },
 ];
 
 export default function Hud() {

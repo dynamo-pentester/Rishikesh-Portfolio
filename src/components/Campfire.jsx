@@ -11,7 +11,7 @@ export default function Campfire() {
   return (
     <section id="campfire" data-region className="region campfire">
       <span className="kanji" aria-hidden="true">狼煙</span>
-      <p className="eyebrow" data-reveal>Finale — Signal fire · {profile.available}</p>
+      <p className="eyebrow" data-reveal>Finale — The resting place · {profile.available}</p>
 
       <h2 className="verbs" aria-label="Let's probe, harden, ship — together." data-reveal>
         <span aria-hidden="true">let&rsquo;s</span>
@@ -32,9 +32,13 @@ export default function Campfire() {
 
       <footer className="colophon">
         <img src="/assets/signature.png" alt="Rishikesh R — signature" loading="lazy" />
-        <span>© {new Date().getFullYear()} Rishikesh R — terrain, trees and sketches are generated in code.</span>
+        <span>© {new Date().getFullYear()} Rishikesh R — terrain, grass, gate and sketches are generated in code.</span>
         <a className="link" href="#spawn">Back to spawn</a>
       </footer>
+      <p className="credits">
+        3D credits (CC BY 4.0, adapted): “Samurai Sentinel” by 3dUVpro · “Samurai Sword” by CrazyMoralFreak ·
+        “It&rsquo;s Finally Over” by klnguyen · “Old Japanese Lantern” by ulucuvute. Motion capture from Mixamo.
+      </p>
     </section>
   );
 }

@@ -323,7 +323,7 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 @keyframes bars { from { height: 3px; } to { height: 12px; } }
 
 /* ---------- the opening shot ---------- */
-.hero { position: relative; height: 185svh; }
+.hero { position: relative; height: 300svh; }
 .hero-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; --q: 0; }
 .hero-pin .kanji { z-index: 3; }
 .cut { position: absolute; inset: 0; will-change: transform, opacity; opacity: clamp(0, calc(1.3 - var(--q) * 1.7), 1); }
@@ -373,11 +373,11 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 .dossier-head .eyebrow { text-shadow: 0 0 12px var(--paper); }
 .deck { position: relative; width: 100%; max-width: 560px; min-height: 0; --f: 0; perspective: 1400px; }
 .sheet-file {
-  --d: calc(var(--i) - var(--f)); --up: clamp(0, var(--d), 1.1); --k: clamp(0, calc(-1 * var(--d)), 3);
+  --d: calc(var(--i) - var(--f)); --up: clamp(0, var(--d), 1.1); --k: clamp(0, calc(-1 * var(--d)), 3); opacity: clamp(0, calc(2.5 - var(--k)), 1);
   position: absolute; inset: 0; z-index: var(--i); display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); overflow: hidden;
   color: var(--washi-ink); border-radius: 6px 14px 14px 6px; box-shadow: 0 30px 70px rgb(0 0 0 / 0.65), 0 2px 0 rgb(255 255 255 / 0.25) inset;
   transform-origin: 50% 0; will-change: transform;
-  transform: translate3d(0, calc(var(--up) * 118% - var(--k) * 22px), 0) scale(calc(1 - var(--k) * 0.055)) rotateX(calc(var(--up) * -14deg));
+  transform: translate3d(0, calc(var(--up) * 118% - var(--k) * 9px), 0) scale(calc(1 - var(--k) * 0.055)) rotateX(calc(var(--up) * -14deg));
   filter: brightness(calc(1 - var(--k) * 0.24));
   background:
     radial-gradient(120% 80% at 12% 0%, rgb(120 70 30 / 0.18), transparent 60%),
@@ -437,3 +437,72 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
   .sheet-desc { -webkit-line-clamp: 4; line-clamp: 4; }
 }
 .colophon img { filter: invert(1) brightness(1.6); }
+
+
+/* =====================================================================
+   One form per kind of record: hand scroll, notice board, seals
+   ===================================================================== */
+.sub-head { margin-bottom: clamp(1.4rem, 3vw, 2.4rem); }
+.sub-head .eyebrow { text-shadow: 0 0 12px var(--paper); }
+.ledger { margin-top: clamp(0.75rem, 1.6vw, 1.25rem); max-width: 1180px; }
+.credits { margin-top: 1.5rem; max-width: 80ch; font-family: var(--mono); font-size: 9.5px; line-height: 1.7; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+
+/* the service record: a hand scroll that unrolls from its centre */
+.emaki { display: flex; align-items: stretch; justify-content: center; max-width: 1180px; filter: drop-shadow(0 30px 50px rgb(0 0 0 / 0.6)); }
+.emaki-rod { flex: 0 0 18px; margin: -14px 0; border-radius: 9px; background: linear-gradient(90deg, #1a0d09, #5a3221 45%, #2a160f); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.5); position: relative; }
+.emaki-rod::before, .emaki-rod::after { content: ''; position: absolute; left: -3px; right: -3px; height: 16px; border-radius: 4px; background: var(--mark); }
+.emaki-rod::before { top: 0; } .emaki-rod::after { bottom: 0; }
+.emaki-paper {
+  flex: 0 1 100%; display: grid; color: var(--washi-ink); overflow: hidden;
+  background: repeating-linear-gradient(90deg, rgb(27 18 15 / 0.03) 0 1px, transparent 1px 5px), radial-gradient(90% 120% at 0% 0%, rgb(120 70 30 / 0.2), transparent 60%), var(--washi);
+  border-block: 6px solid #6b1420; max-width: 100%; transition: max-width 1.5s var(--ease) 0.25s;
+}
+.emaki[data-reveal]:not([data-reveal='in']) .emaki-paper { max-width: 0; }
+.emaki-panel { position: relative; padding: clamp(1.3rem, 3vw, 2.4rem); padding-right: clamp(3.4rem, 6vw, 5rem); min-width: min(76vw, 300px); }
+.emaki-panel + .emaki-panel { border-top: 1px solid var(--washi-line); }
+.emaki-panel h3 { font-family: var(--serif); font-variation-settings: 'opsz' 144; font-weight: 300; font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.02; letter-spacing: -0.035em; margin: 0.5rem 0 1rem; }
+.emaki-mark { position: absolute; right: clamp(0.9rem, 2vw, 1.6rem); top: clamp(1.1rem, 2.4vw, 2rem); font-family: var(--brush); font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1; color: #a3101f; }
+@media (min-width: 900px) {
+  .emaki-paper { grid-auto-flow: column; grid-auto-columns: 1fr; }
+  .emaki-panel + .emaki-panel { border-top: 0; border-left: 1px solid var(--washi-line); }
+}
+
+/* published research: papers nailed to a wooden notice board */
+.board {
+  position: relative; display: grid; gap: clamp(1rem, 2vw, 1.6rem); grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  max-width: 1180px; padding: clamp(1.8rem, 3.4vw, 2.8rem) clamp(1rem, 2.6vw, 2.2rem) clamp(1.2rem, 2.6vw, 2.2rem);
+  border-radius: 4px; border: 1px solid rgb(0 0 0 / 0.6); box-shadow: 0 30px 60px rgb(0 0 0 / 0.6), inset 0 0 60px rgb(0 0 0 / 0.55);
+  background: repeating-linear-gradient(90deg, rgb(0 0 0 / 0.22) 0 2px, transparent 2px 86px), repeating-linear-gradient(0deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 7px), linear-gradient(#2b1811, #170c08);
+}
+.board::before { content: ''; position: absolute; left: -14px; right: -14px; top: -12px; height: 20px; border-radius: 3px; background: linear-gradient(#3b2217, #1c0f0a); box-shadow: 0 6px 14px rgb(0 0 0 / 0.6); }
+.notice {
+  position: relative; display: flex; flex-direction: column; gap: 0.5rem; padding: 1.5rem 1.15rem 1.1rem; color: var(--washi-ink);
+  background: repeating-linear-gradient(0deg, rgb(27 18 15 / 0.035) 0 1px, transparent 1px 4px), var(--washi);
+  box-shadow: 0 10px 20px rgb(0 0 0 / 0.5); rotate: var(--tilt); transform-origin: 50% 0;
+  opacity: 0; translate: 0 -14px; transition: opacity 0.6s var(--ease) var(--d), translate 0.6s var(--ease) var(--d), rotate 0.5s var(--ease);
+}
+.board[data-reveal='in'] .notice { opacity: 1; translate: 0 0; }
+.notice::before { content: ''; position: absolute; left: 50%; top: 7px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #777, #151515 70%); box-shadow: 0 2px 3px rgb(0 0 0 / 0.5); }
+.notice h3 { font-family: var(--serif); font-variation-settings: 'opsz' 144; font-weight: 300; font-size: clamp(1.6rem, 2.4vw, 2.1rem); line-height: 1; letter-spacing: -0.03em; overflow-wrap: anywhere; }
+.notice .sheet-sub { font-size: 1rem; }
+.notice-status { font-size: 13px; line-height: 1.5; color: rgb(27 18 15 / 0.75); }
+.notice .link { align-self: flex-start; margin-top: auto; color: var(--washi-ink); }
+.notice .hanko { align-self: flex-end; margin-top: auto; }
+.notice-sealed { background: repeating-linear-gradient(0deg, rgb(27 18 15 / 0.05) 0 1px, transparent 1px 4px), #cdbd9c; }
+@media (hover: hover) { .notice:hover { rotate: 0deg; z-index: 1; } }
+
+/* licences: each one a red seal pressed onto the page */
+.seals { display: grid; gap: clamp(1.4rem, 3vw, 2.4rem) clamp(1rem, 2.4vw, 2rem); grid-template-columns: repeat(auto-fill, minmax(min(46%, 170px), 1fr)); max-width: 1180px; }
+.seals a { display: grid; justify-items: start; gap: 0.5rem; }
+.seals strong { font-family: var(--serif); font-weight: 400; font-size: 1.05rem; line-height: 1.2; letter-spacing: -0.01em; text-shadow: 0 0 18px var(--paper), 0 0 6px var(--paper); transition: color 0.3s ease; }
+.seals small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-shadow: 0 0 10px var(--paper); }
+.stamp {
+  display: grid; place-items: center; width: 4.6rem; height: 4.6rem; margin-bottom: 0.4rem; border-radius: 50%; color: var(--mark);
+  border: 2px solid var(--mark); outline: 1px solid var(--mark); outline-offset: 4px; background: rgb(224 24 47 / 0.12);
+  font-family: var(--serif); font-style: italic; font-size: 1.5rem; letter-spacing: -0.04em; rotate: -9deg;
+  -webkit-mask-image: radial-gradient(circle at 30% 70%, rgb(0 0 0 / 0.55) 0 14%, #000 30%); mask-image: radial-gradient(circle at 30% 70%, rgb(0 0 0 / 0.55) 0 14%, #000 30%);
+  scale: 1.7; opacity: 0; transition: scale 0.35s cubic-bezier(0.3, 0, 0.1, 1) calc(var(--d) + 0.2s), opacity 0.2s ease calc(var(--d) + 0.2s);
+}
+[data-reveal='in'] .stamp { scale: 1; opacity: 1; }
+@media (hover: hover) { .seals a:hover strong { color: var(--mark); } .seals a:hover .stamp { background: var(--mark); color: var(--paper); } }
+@media (prefers-reduced-motion: reduce) { .stamp, .notice { transition: none; scale: 1; opacity: 1; translate: 0 0; } .emaki-paper { transition: none; } }

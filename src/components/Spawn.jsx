@@ -14,7 +14,7 @@ function Scene({ live }) {
           and the detection systems that catch what gets through.
         </p>
         <div className="cta-row">
-          <a className="btn btn-solid" href="#quests" tabIndex={live ? 0 : -1}>Open the scrolls</a>
+          <a className="btn btn-solid" href="#character" tabIndex={live ? 0 : -1}>Enter the gate</a>
           <a className="btn" href="/Rishikesh-R.pdf" target="_blank" rel="noreferrer" tabIndex={live ? 0 : -1}>Résumé</a>
         </div>
         <p className="hint"><span>Scroll — the blade does the rest</span><span className="hint-key">Turn sound on for the cut</span></p>
@@ -30,21 +30,30 @@ export default function Spawn() {
 
   useEffect(() => {
     let cut = false, raf = 0;
+    const setCut = (on) => {
+      if (on === cut) return;
+      cut = on; pin.current.classList.toggle('is-cut', on);
+      if (on) sound.cut();
+      update();
+    };
     const update = () => {
       raf = 0;
       const r = section.current.getBoundingClientRect();
       const p = Math.min(Math.max(-r.top / Math.max(r.height - innerHeight, 1), 0), 1);
-      const q = Math.min(Math.max((p - 0.14) / 0.86, 0), 1);
+      store.hero.p = p;
+      // the world calls the cut when the blade lands; without it (no WebGL, model still loading) the scroll does
+      if (!cut && p > 0.62) setCut(true);
+      if (cut && p < 0.3) setCut(false);
+      const q = cut ? Math.min(Math.max((p - 0.46) / 0.54, 0), 1) : 0;
       pin.current.style.setProperty('--q', q.toFixed(4));
       store.hero.q = q;
-      if (!cut && p > 0.14) { cut = true; store.hero.cut = true; pin.current.classList.add('is-cut'); sound.cut(); }
-      else if (cut && p < 0.05) { cut = false; store.hero.cut = false; pin.current.classList.remove('is-cut'); }
     };
     const onScroll = () => { raf ||= requestAnimationFrame(update); };
+    store.hero.onCut = setCut;
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf); };
+    return () => { store.hero.onCut = null; window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf); };
   }, []);
 
   return (
