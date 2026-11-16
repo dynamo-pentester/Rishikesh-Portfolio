@@ -150,6 +150,14 @@ export const stack = [
   'Web3.py', 'Solidity', 'Scikit-learn',
 ];
 
+// Skill tree — grouped exactly as on the résumé.
+export const skillTree = [
+  { branch: 'Kernel & Systems', skills: ['C/C++', 'Linux Kernel Modules', 'kprobes', 'Netlink', 'Syscall Internals', 'Socket Programming'] },
+  { branch: 'Security', skills: ['VAPT', 'OWASP Top 10', 'Network Pentesting', 'Digital Forensics', 'Log & Traffic Analysis'] },
+  { branch: 'Tools', skills: ['Burp Suite', 'Metasploit', 'Nmap', 'Wireshark', 'SQLmap', 'Volatility'] },
+  { branch: 'Backend & Data', skills: ['Python', 'FastAPI', 'Flask', 'REST APIs', 'PostgreSQL', 'MongoDB'] },
+];
+
 export const navItems = [
   { label: 'Work', href: '#work' },
   { label: 'About', href: '#about' },
