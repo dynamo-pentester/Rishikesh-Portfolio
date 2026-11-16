@@ -373,7 +373,7 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 .dossier-head .eyebrow { text-shadow: 0 0 12px var(--paper); }
 .deck { position: relative; width: 100%; max-width: 560px; min-height: 0; --f: 0; perspective: 1400px; }
 .sheet-file {
-  --d: calc(var(--i) - var(--f)); --up: clamp(0, var(--d), 1.1); --k: clamp(0, calc(-1 * var(--d)), 3); opacity: clamp(0, calc(2.5 - var(--k)), 1);
+  --d: calc(var(--i) - var(--f)); --up: clamp(0, calc((var(--d) - 0.3) * 2.5), 1.1); --k: clamp(0, calc(-1 * var(--d)), 3); opacity: clamp(0, calc(2.5 - var(--k)), 1);
   position: absolute; inset: 0; z-index: var(--i); display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); overflow: hidden;
   color: var(--washi-ink); border-radius: 6px 14px 14px 6px; box-shadow: 0 30px 70px rgb(0 0 0 / 0.65), 0 2px 0 rgb(255 255 255 / 0.25) inset;
   transform-origin: 50% 0; will-change: transform;
@@ -670,3 +670,22 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 @keyframes hang { 0%, 100% { transform: rotate(-1.6deg); } 22% { transform: rotate(2.4deg); } 48% { transform: rotate(-0.6deg); } 70% { transform: rotate(3.1deg); } 86% { transform: rotate(0.4deg); } }
 @keyframes flutter { 0%, 100% { transform: skewX(0deg) rotate(0deg); } 30% { transform: skewX(-1.3deg) rotate(0.7deg); } 55% { transform: skewX(0.5deg) rotate(-0.3deg); } 78% { transform: skewX(-1.9deg) rotate(1deg); } }
 @keyframes nobori-wind { from { transform: rotate(-1.5deg) skewX(-2deg) scaleX(1); } 50% { transform: rotate(0.6deg) skewX(1.2deg) scaleX(0.985); } to { transform: rotate(1.8deg) skewX(2.4deg) scaleX(0.97); } }
+
+/* ---------- phones: the finale leaves the grave in view, then the words and the card follow ---------- */
+@media (max-width: 899px) {
+  .hud-labels { display: none; }
+  .campfire { justify-content: flex-start; padding-top: 52svh; padding-bottom: 5rem; }
+  .campfire .kanji { top: auto; bottom: calc(100% - 52svh + 1rem); font-size: 2.2rem; }
+  .campfire > .eyebrow { max-width: 30ch; line-height: 1.7; }
+  .campfire .verbs { max-width: none; gap: 0 0.25em; margin: 0.9rem 0 1.4rem; font-size: clamp(2.5rem, 12vw, 3.6rem); line-height: 1; }
+  .campfire .verbs span:not(:first-child) { color: var(--ink); }
+  .campfire .verbs span:first-child { font-size: 0.42em; }
+  .campfire .contact { max-width: none; }
+  .campfire .contact-links { gap: 0.4rem 1.4rem; }
+  .campfire .colophon { flex-direction: column; align-items: flex-start; gap: 0.8rem; max-width: none; }
+  .campfire .colophon span { flex: none; }
+  /* case files: a little more room for the words, and the next file waits fully below until its turn */
+  .deck { height: min(60svh, 520px); }
+  .sheet-sketch { flex-basis: 20%; }
+}
+@media (max-width: 899px) { .sheet-desc { -webkit-line-clamp: 8; line-clamp: 8; } }
