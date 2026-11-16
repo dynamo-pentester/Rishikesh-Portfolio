@@ -31,6 +31,8 @@ const STOPS = [
 ];
 const GRAB = 0.467, HOME = 1.133;   // seconds into the draw / sheathe clips where the hand meets the hilt
 
+// nothing tall may stand between a project stone and the spot the camera views it from
+const nearStoneView = (x, z, r) => Object.entries(WAYPOINTS).some(([id, [wx, wz]]) => id !== 'spawn' && id !== 'campfire' && Math.hypot(x - wx - 1.3, z - wz - 6) < r);
 const smooth = (t) => t * t * (3 - 2 * t);
 const mix = (a, b, t) => a + (b - a) * t;
 const clamp = (v, a = 0, b = 1) => Math.min(Math.max(v, a), b);
@@ -345,7 +347,7 @@ export class World {
     this.place(new THREE.InstancedMesh(rockGeo, rockMat, 70), 70, 31, 80, (d, x, y, z, r) => {
       if (y <= SEA + 0.1) return false;
       const s = 1.3 + r() * 2.6;
-      if ((Math.abs(x) < 7 && z > 36) || Math.hypot(x - 11, z + 59) < 13) return false;
+      if ((Math.abs(x) < 7 && z > 36) || Math.hypot(x - 11, z + 59) < 13 || nearStoneView(x, z, 10)) return false;
       d.position.set(x, y - s * 0.12, z); d.rotation.set(r() * 6, r() * 6, r() * 6); d.scale.set(s, s * 0.7, s);
     });
 
@@ -554,7 +556,7 @@ export class World {
         const a = anchors[Math.floor(r() * anchors.length)], ang = r() * 6.2832, d = 9 + r() * 50;
         const x = a[0] + Math.cos(ang) * d, z = a[1] + Math.sin(ang) * d, y = heightAt(x, z);
         if (y <= SEA + 0.6 || flight.some(([fx, fz]) => Math.hypot(fx - x, fz - z) < 22)) continue;
-        if (Math.hypot(x - WAYPOINTS.spawn[0], z - WAYPOINTS.spawn[1]) < 13 || Math.hypot(x - 12, z + 58) < 17 || Math.hypot(x - 5, z - 50) < 12) continue;
+        if (Math.hypot(x - WAYPOINTS.spawn[0], z - WAYPOINTS.spawn[1]) < 13 || Math.hypot(x - 12, z + 58) < 17 || Math.hypot(x - 5, z - 50) < 12 || nearStoneView(x, z, 13)) continue;
         spots.push({ x, y, z, rot: r() * 6.28, s: 1.5 + r() * 0.9, v: r() < 0.5 ? 'TreeA' : 'TreeB' });
       }
       for (const v of ['TreeA', 'TreeB']) {

@@ -518,3 +518,5 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 .campfire .colophon { margin-top: clamp(1.25rem, 3vh, 2rem); max-width: 620px; }
 .campfire .colophon img { width: 110px; }
 .campfire .credits { margin-top: 0.8rem; max-width: 620px; }
+
+@media (min-width: 1000px) { .seals { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
