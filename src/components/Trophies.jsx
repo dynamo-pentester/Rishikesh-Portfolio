@@ -35,7 +35,7 @@ export default function Trophies() {
         </header>
         <ul className="ema-rack">
           {ctfEvents.map((e, i) => (
-            <li key={e.id} data-reveal style={{ '--d': `${(i % 4) * 80}ms`, '--tilt': `${[-1.4, 0.9, -0.6, 1.5, -1, 0.5][i % 6]}deg` }}>
+            <li key={e.id} data-reveal style={{ '--d': `${(i % 4) * 80}ms`, '--tilt': `${[-1.4, 0.9, -0.6, 1.5, -1, 0.5][i % 6]}deg`, '--wind': `${-(i * 0.83) % 5}s`, '--pace': `${4.2 + (i % 4) * 0.55}s` }}>
               <article className="ema">
                 <p className="ema-meta">{e.type} · {e.date}</p>
                 <h3>{e.title}</h3>
@@ -53,7 +53,7 @@ export default function Trophies() {
         </header>
         <div className="board" data-reveal>
           {notices.map((r, i) => (
-            <article key={r.id} className={`notice${r.link ? '' : ' notice-sealed'}`} style={{ '--tilt': `${[-1.6, 1.1, -0.7, 1.8, -1.2, 0.8][i % 6]}deg`, '--d': `${i * 90}ms` }}>
+            <article key={r.id} className={`notice${r.link ? '' : ' notice-sealed'}`} style={{ '--tilt': `${[-1.6, 1.1, -0.7, 1.8, -1.2, 0.8][i % 6]}deg`, '--d': `${i * 90}ms`, '--wind': `${-(i * 1.1) % 6}s` }}>
               <p className="sheet-meta">{r.date} · {r.severity}</p>
               <h3>{r.target}</h3>
               <p className="sheet-sub">{r.title}</p>

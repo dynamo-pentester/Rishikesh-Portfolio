@@ -22,7 +22,7 @@ export default function Disciplines() {
               <span className="fan-name">{x.title}</span>
             </button>
           ))}
-          <i className="fan-pin" aria-hidden="true" />
+          <button type="button" className="fan-pin" aria-label={open ? 'Close the fan' : 'Open the fan'} onClick={() => { setOpen(!open); setActive(null); }} />
         </div>
 
         {s ? (
