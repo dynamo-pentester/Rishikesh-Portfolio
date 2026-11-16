@@ -1,13 +1,11 @@
 import { services } from '../data/portfolio';
+import ActTitle from './ActTitle';
 
 export default function Disciplines() {
   return (
-    <section id="disciplines" data-region className="region">
-      <span className="kanji" aria-hidden="true">技</span>
-      <header className="region-head" data-reveal data-slash>
-        <p className="eyebrow">Act III — The arsenal</p>
-        <h2 className="title-lg">Four ways <em>in</em></h2>
-      </header>
+    <div id="disciplines" data-region>
+    <ActTitle eyebrow="Act III — The arsenal" kanji="技">Four ways <em>in</em></ActTitle>
+    <section className="region region-body">
 
       <ol className="disciplines">
         {services.map((s, i) => (
@@ -20,5 +18,6 @@ export default function Disciplines() {
         ))}
       </ol>
     </section>
+    </div>
   );
 }

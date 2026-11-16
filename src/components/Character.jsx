@@ -1,15 +1,12 @@
 import { profile, skillTree, campaigns } from '../data/portfolio';
+import ActTitle from './ActTitle';
 
 // Act I: who he is, what he carries, and where he has served — the service record is a hand scroll that unrolls sideways.
 export default function Character() {
   return (
     <div id="character" data-region>
-      <section className="region">
-        <span className="kanji" aria-hidden="true">人物</span>
-        <header className="region-head" data-reveal data-slash>
-          <p className="eyebrow">Act I — The warrior</p>
-          <h2 className="title-lg">Part adversary, <em>part architect</em></h2>
-        </header>
+      <ActTitle eyebrow="Act I — The warrior" kanji="人物">Part adversary, <em>part architect</em></ActTitle>
+      <section className="region region-body">
 
         <div className="character">
           <aside className="sheet card" data-reveal>

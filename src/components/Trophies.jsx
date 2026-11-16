@@ -1,4 +1,5 @@
 import { ctfEvents, certificates, research } from '../data/portfolio';
+import ActTitle from './ActTitle';
 
 const sealed = { id: 'sealed', target: 'Sealed', title: 'Further reports with Google, Microsoft, n8n and others', severity: 'Under coordinated disclosure', status: 'Opened when each vendor publishes', date: '2026' };
 const notices = [...research, sealed];
@@ -15,12 +16,8 @@ const initials = (s) => s.split(/[\s-]+/).filter((w) => /^[A-Z0-9]/.test(w)).sli
 export default function Trophies() {
   return (
     <div id="trophies" data-region>
-      <section className="region region-short">
-        <span className="kanji" aria-hidden="true">功績</span>
-        <header className="region-head" data-reveal data-slash>
-          <p className="eyebrow">Act IV — War record</p>
-          <h2 className="title-lg">Numbers, <em>not adjectives</em></h2>
-        </header>
+      <ActTitle eyebrow="Act IV — War record" kanji="功績">Numbers, <em>not adjectives</em></ActTitle>
+      <section className="region region-short region-body">
 
         <div className="sheet headline" data-reveal>
           {HEADLINE.map((h) => (

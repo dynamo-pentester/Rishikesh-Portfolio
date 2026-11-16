@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { projects } from '../data/portfolio';
 import { store } from '../world/store';
 import Dossier from './Dossier';
+import ActTitle from './ActTitle';
 
 const KANJI = { sentinel: '番人', securesplit: '分割', matcare: '母子', 'ale-logs': '記録' };
 const files = projects.map((p) => ({ ...p, kanji: KANJI[p.id] }));
@@ -11,7 +12,8 @@ export default function QuestLog() {
   const focus = useCallback((item) => { store.focus = item.id; }, []);
   return (
     <div id="quests" data-region>
-      <Dossier id="scrolls" eyebrow={`Act II — The scrolls · ${projects.length} case files`} title={<>Selected <em>work</em></>} items={files} onActive={focus}>
+      <ActTitle eyebrow="Act II — The scrolls" kanji="巻物">Selected <em>work</em></ActTitle>
+      <Dossier id="scrolls" eyebrow={`${projects.length} case files`} title={<>The <em>files</em></>} items={files} onActive={focus}>
         {(p, i) => (
           <>
             <img className="sheet-sketch" src={p.cover} alt="" loading="lazy" />
