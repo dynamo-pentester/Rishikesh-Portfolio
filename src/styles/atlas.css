@@ -598,10 +598,16 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
     repeating-linear-gradient(0deg, rgb(27 18 15 / 0.035) 0 1px, transparent 1px 4px), var(--washi);
   transition: rotate 1s var(--ease) calc(0.2s + var(--d)), filter 0.35s ease, translate 0.35s var(--ease);
 }
-.fan[data-reveal='in'] .fan-leaf { rotate: var(--a); }
+.fan.is-open .fan-leaf { rotate: var(--a); }
+.fan:not(.is-open) .fan-leaf > * { opacity: 0; }
+.fan-leaf > * { transition: opacity 0.5s ease 0.5s; }
+.fan:not(.is-open) { rotate: -14deg; transition: rotate 0.8s var(--ease); }
+.fan { transition: rotate 0.8s var(--ease); }
 .fan-num { font-family: var(--brush); font-size: calc(var(--r) * 0.085); line-height: 1; color: #a3101f; }
 .fan-name { max-width: 82%; font-family: var(--serif); font-variation-settings: 'opsz' 144; font-weight: 400; font-size: max(11px, calc(var(--r) * 0.052)); line-height: 1.08; letter-spacing: -0.02em; }
-.fan-leaf:not(.is-active) { filter: brightness(0.72); }
+.fan.has-active .fan-leaf:not(.is-active) { filter: brightness(0.72); }
+.fan-cue { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); text-shadow: 0 0 12px var(--paper), 0 0 4px var(--paper); }
+.fan-cue::before { content: ''; display: inline-block; width: 28px; height: 1px; margin-right: 0.8rem; vertical-align: middle; background: var(--mark); }
 .fan-leaf.is-active { z-index: 1; }
 .fan-leaf.is-active .fan-name { font-style: italic; }
 .fan-leaf.is-active::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5%; background: var(--mark); }
@@ -609,11 +615,10 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 .fan-pin { position: absolute; left: 50%; bottom: 14px; z-index: 2; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d8b06a, #6a4a1c 70%); box-shadow: 0 2px 4px rgb(0 0 0 / 0.6); }
 .fan-pin::after { content: ''; position: absolute; left: 50%; top: 100%; width: 3px; height: 30px; margin-left: -1.5px; background: var(--mark); border-radius: 2px; }
 .fan-detail { width: 100%; max-width: 760px; padding: clamp(1.25rem, 2.6vw, 2rem); animation: fan-detail 0.5s var(--ease) both; }
-.fan-detail[data-reveal] { opacity: 1; transform: none; }
 .fan-detail h3 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.7rem, 3.4vw, 2.8rem); line-height: 1.05; letter-spacing: -0.03em; margin: 0.8rem 0 0.9rem; }
 .fan-detail .tags { margin-top: 1.1rem; }
 @keyframes fan-detail { from { opacity: 0; translate: 0 14px; } }
-@media (prefers-reduced-motion: reduce) { .fan-leaf { transition: none; rotate: var(--a); } .fan-detail { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .fan-leaf, .fan { transition: none; } .fan-detail { animation: none; } }
 
 /* ---------- war record: three banners for the headline figures ---------- */
 .banners { position: relative; display: grid; gap: clamp(0.8rem, 2vw, 1.6rem); grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1180px; padding-top: 16px; }
