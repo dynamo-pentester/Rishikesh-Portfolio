@@ -62,6 +62,9 @@ export const projects = [
     year: '2025',
     tags: ['C', 'Linux LKM', 'Windows KMDF', 'kprobes', 'Netlink', 'Web3.py', 'Solidity'],
     image: '/assets/project_sentinel.png',
+    cover: '/assets/covers/sentinel.svg',
+    accent: '#7dffd0',
+    disciplines: ['Kernel', 'Detection', 'Forensics'],
     link: 'https://github.com/dynamo-pentester',
   },
   {
@@ -74,6 +77,9 @@ export const projects = [
     year: '2024',
     tags: ['Python', 'FastAPI', 'IPFS', 'NumPy', 'Cryptography'],
     image: '/assets/project_securesplit.png',
+    cover: '/assets/covers/securesplit.svg',
+    accent: '#e0b3ff',
+    disciplines: ['Cryptography', 'Storage', 'Backend'],
     link: 'https://github.com/dynamo-pentester',
   },
   {
@@ -86,8 +92,35 @@ export const projects = [
     year: '2025',
     tags: ['Python', 'Flask', 'PostgreSQL', 'Scikit-learn', 'Web3.py', 'ESP32'],
     image: '/assets/project_matcare.png',
+    cover: '/assets/covers/matcare.svg',
+    accent: '#ffb199',
+    disciplines: ['IoT', 'Applied ML', 'Backend'],
     link: 'https://github.com/dynamo-pentester',
   },
+  {
+    id: 'ale-logs',
+    title: 'Log Analysis Platform',
+    subtitle: 'Switch Log & Telemetry Investigation — ALE Internship',
+    description:
+      'Built a FastAPI-based platform at Alcatel-Lucent Enterprise to ingest, parse, and visualize AOS switch and HMON datasets — automated extraction from nested TAR archives, regex parsing of multi-file logs into structured JSON, and Plotly dashboards for CPU, memory, and fan telemetry across 10K+ log entries.',
+    role: 'Software Development Intern',
+    year: '2025',
+    tags: ['Python', 'FastAPI', 'Regex', 'Plotly', 'JSON'],
+    image: '/assets/covers/logs.svg',
+    cover: '/assets/covers/logs.svg',
+    accent: '#ffc46b',
+    disciplines: ['Backend', 'Log Analysis', 'Dashboards'],
+    link: 'https://github.com/dynamo-pentester',
+  },
+];
+
+// Bento tiles for the "At a glance" section — every figure comes from the résumé.
+export const highlights = [
+  { id: 'thm', size: 'lg', kicker: 'TryHackMe', value: 'Top 5%', note: 'Global ranking across exploitation, privilege-escalation and post-exploitation labs.' },
+  { id: 'skills', size: 'md', kicker: 'IndiaSkills Southern Regionals 2026', value: 'Medallion of Excellence', note: 'Cyber Security track.' },
+  { id: 'ale', size: 'md', kicker: 'Alcatel-Lucent Enterprise', value: '10K+ log entries', note: 'Parsed and visualised by the log analysis platform built during the 2025 internship.' },
+  { id: 'ctf', size: 'sm', kicker: 'Apoorv CTF 2026', value: '#44', note: 'Worldwide rank.' },
+  { id: 'edu', size: 'sm', kicker: 'B.E. CSE — Ramco Institute of Technology', value: '2027', note: 'Graduating class.' },
 ];
 
 export const testimonials = [

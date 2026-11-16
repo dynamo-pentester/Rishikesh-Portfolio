@@ -1,6 +1,7 @@
 import Hero from './components/Hero';
 import Navbar from './components/UI/Navbar';
 import Work from './components/Work';
+import Highlights from './components/Highlights';
 import About from './components/About';
 import Services from './components/Services';
 import Testimonials from './components/Testimonials';
@@ -14,6 +15,7 @@ function App() {
       <main>
         <Hero />
         <Work />
+        <Highlights />
         <About />
         <Services />
         <Testimonials />

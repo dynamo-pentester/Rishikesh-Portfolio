@@ -27,10 +27,12 @@ const Contact = () => {
 
         <div className="contact-grid">
           <div>
-            <h2 className="contact-heading">
-              Let's build<br />
-              something <span className="serif" style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>secure</span><br />
-              and <span className="serif" style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>resilient.</span>
+            <h2 className="stack-cta" aria-label="Let's probe, harden, ship — together.">
+              <span className="script stack-cta-lead" aria-hidden="true">let's</span>
+              {['probe', 'harden', 'ship'].map((w) => (
+                <span key={w} className="stack-cta-word" aria-hidden="true">{w}</span>
+              ))}
+              <span className="stack-cta-word serif-i" aria-hidden="true">together.</span>
             </h2>
             <p className="contact-subtext">
               I'm currently open to internship roles and junior security engineer positions.
