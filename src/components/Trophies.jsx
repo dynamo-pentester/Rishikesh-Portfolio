@@ -1,7 +1,7 @@
-import { ctfEvents, certificates } from '../data/portfolio';
+import { ctfEvents, certificates, research } from '../data/portfolio';
 
 const HEADLINE = [
-  { value: 'Top 5%', label: 'TryHackMe — global ranking' },
+  { value: 'Top 3%', label: 'TryHackMe — global ranking' },
   { value: '#44', label: 'Apoorv CTF 2026 — worldwide' },
   { value: 'Medallion', label: 'of Excellence — IndiaSkills Southern Regionals 2026' },
 ];
@@ -22,7 +22,24 @@ export default function Trophies() {
       </div>
 
       <div className="sheet ledger" data-reveal>
-        <p className="eyebrow">Competitions</p>
+        <p className="eyebrow">Field reports — vulnerability research</p>
+        <ul className="rows">
+          {research.map((r) => (
+            <li key={r.id}>
+              <a className="rows-main" href={r.link} target="_blank" rel="noreferrer">{r.target} — {r.title}<small>{r.severity}</small></a>
+              <span className="rows-place">{r.status}</span>
+              <span className="rows-year">{r.date}</span>
+            </li>
+          ))}
+          <li className="rows-sealed">
+            <span className="rows-main">Further reports<small>Google · Microsoft · n8n and others</small></span>
+            <span className="rows-place">Sealed</span>
+            <span className="rows-year">2026</span>
+            <p className="rows-note">Under coordinated disclosure. Details stay sealed until each vendor publishes.</p>
+          </li>
+        </ul>
+
+        <p className="eyebrow ledger-gap">Competitions</p>
         <ul className="rows">
           {ctfEvents.map((e) => (
             <li key={e.id}>

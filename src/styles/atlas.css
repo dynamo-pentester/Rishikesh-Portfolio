@@ -5,6 +5,7 @@
 :root {
   --paper: #efe9dc; --ink: #16150f; --accent: #e8839f; --sun: #d8412a; --mark: #d8412a;
   --sky-top: #9fd3f2; --sky-low: #fde9e1; --cloud: #ffffff; --land-lo: #a9d389; --land-hi: #e3ecbd; --sand: #f3e6c4; --water: #8fcbe8; --bark: #5b4038;
+  --figure: #16150f; --figure-edge: transparent; --figure-blade: #16150f;
   --ink-rgb: 22 21 15;
   --muted: rgb(var(--ink-rgb) / 0.62);
   --faint: rgb(var(--ink-rgb) / 0.38);
@@ -21,6 +22,7 @@
 :root[data-theme='night'] {
   --paper: #0e1126; --ink: #e8e3d6; --accent: #ff9cba; --sun: #efe8d6; --mark: #ff9cba;
   --sky-top: #070b24; --sky-low: #2b2756; --cloud: #3c3a6e; --land-lo: #1f4b4a; --land-hi: #3a6a5c; --sand: #4a5a78; --water: #2450a0; --bark: #d9c9c4;
+  --figure: #05060f; --figure-edge: rgb(232 227 214 / 0.55); --figure-blade: #e8e3d6;
   --ink-rgb: 232 227 214;
   color-scheme: dark;
 }
@@ -177,13 +179,9 @@ main { position: relative; z-index: 2; }
 .character { display: grid; gap: clamp(2rem, 5vw, 4.5rem); }
 @media (min-width: 900px) { .character { grid-template-columns: minmax(280px, 380px) 1fr; align-items: start; } }
 .card { padding: clamp(0.9rem, 1.4vw, 1.25rem); }
-/* The portrait stands in the scene: a cut-out figure in front of the rising sun. */
-.figure { position: relative; aspect-ratio: 1 / 1; margin: 0 0 -1px; border-radius: 14px 14px 0 0; overflow: hidden; }
-.figure::before { content: ''; position: absolute; left: 50%; top: 6%; width: 78%; aspect-ratio: 1; translate: -50% 0; border-radius: 50%; background: var(--mark); }
-.figure::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: var(--line); }
-.portrait { position: relative; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.wanderer { display: block; width: 100%; height: auto; border-radius: 14px 14px 0 0; background: linear-gradient(var(--sky-top), var(--sky-low) 70%); }
 .facts { margin-top: 0; }
-.facts div:first-child { border-top: 0; }
+
 .facts div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.75rem; padding: 0.7rem 0.2rem; border-top: 1px solid var(--line); font-size: 14px; }
 .facts dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding-top: 0.2rem; }
 .prose { display: grid; gap: 1.2rem; max-width: 58ch; font-family: var(--serif); font-weight: 300; font-size: clamp(1.15rem, 1.9vw, 1.55rem); line-height: 1.4; }
@@ -209,6 +207,9 @@ main { position: relative; z-index: 2; }
 @media (min-width: 800px) { .headline { grid-template-columns: repeat(3, 1fr); } }
 .ledger { padding: clamp(1.1rem, 3vw, 2.5rem); }
 .ledger-gap { margin-top: 2.5rem; }
+.rows-note { grid-column: 1 / -1; font-size: 13.5px; line-height: 1.6; color: var(--muted); max-width: 70ch; }
+.rows-sealed .rows-main { color: var(--muted); }
+.rows-sealed .rows-place { font-family: var(--mono); font-style: normal; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; }
 .rows { margin-top: 0.9rem; }
 .rows li { display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 1rem; align-items: baseline; padding: 0.8rem 0; border-top: 1px solid var(--line); font-size: 15px; }
 .rows-main small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 0.15rem; }

@@ -18,7 +18,7 @@ export const profile = {
 };
 
 export const stats = [
-  { value: 'Top 5%', label: 'TryHackMe Global' },
+  { value: 'Top 3%', label: 'TryHackMe Global' },
   { value: '#44', label: 'Apoorv CTF 2026' },
   { value: '3+', label: 'Major Projects' },
   { value: '5', label: 'Certifications' },
@@ -116,11 +116,43 @@ export const projects = [
 
 // Bento tiles for the "At a glance" section — every figure comes from the résumé.
 export const highlights = [
-  { id: 'thm', size: 'lg', kicker: 'TryHackMe', value: 'Top 5%', note: 'Global ranking across exploitation, privilege-escalation and post-exploitation labs.' },
+  { id: 'thm', size: 'lg', kicker: 'TryHackMe', value: 'Top 3%', note: 'Global ranking across exploitation, privilege-escalation and post-exploitation labs.' },
   { id: 'skills', size: 'md', kicker: 'IndiaSkills Southern Regionals 2026', value: 'Medallion of Excellence', note: 'Cyber Security track.' },
   { id: 'ale', size: 'md', kicker: 'Alcatel-Lucent Enterprise', value: '10K+ log entries', note: 'Parsed and visualised by the log analysis platform built during the 2025 internship.' },
   { id: 'ctf', size: 'sm', kicker: 'Apoorv CTF 2026', value: '#44', note: 'Worldwide rank.' },
   { id: 'edu', size: 'sm', kicker: 'B.E. CSE — Ramco Institute of Technology', value: '2027', note: 'Graduating class.' },
+];
+
+// Published security research only. Reports still under coordinated disclosure are
+// deliberately not described here — add them once the vendor has published.
+export const research = [
+  {
+    id: 'getid3',
+    target: 'getID3',
+    title: 'Memory-exhaustion denial of service via crafted QuickTime atoms',
+    severity: 'High · CVSS 7.5',
+    status: 'Advisory published · credited reporter',
+    date: 'Oct 2026',
+    link: 'https://github.com/JamesHeinrich/getID3/security/advisories/GHSA-4pp3-6hmx-mfmg',
+  },
+  {
+    id: 'typemill',
+    target: 'Typemill',
+    title: 'Bypass of the two-factor authentication brute-force protection',
+    severity: 'Moderate · CVSS 6.8',
+    status: 'Advisory published · co-reported',
+    date: 'Jul 2026',
+    link: 'https://github.com/typemill/typemill/security/advisories/GHSA-3vp6-4p8g-4hmx',
+  },
+  {
+    id: 'tensorflow',
+    target: 'TensorFlow',
+    title: 'Heap out-of-bounds read in FractionalMaxPoolGrad',
+    severity: 'Memory safety',
+    status: 'Reported to Google · fix submitted',
+    date: 'Oct 2026',
+    link: 'https://github.com/tensorflow/tensorflow/pull/126911',
+  },
 ];
 
 export const testimonials = [
@@ -257,8 +289,8 @@ export const ctfEvents = [
     title: 'TryHackMe Platform',
     type: 'Training Platform',
     date: 'Ongoing',
-    placement: 'Top 5% Global Rank',
-    description: 'Ranked in the top 5% globally, completing advanced labs in exploitation, privilege escalation, and post-exploitation.',
+    placement: 'Top 3% Global Rank',
+    description: 'Ranked in the top 3% globally, completing advanced labs in exploitation, privilege escalation, and post-exploitation.',
   },
   {
     id: 2,
