@@ -522,10 +522,19 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 @media (min-width: 1000px) { .seals { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
 /* ---------- act title frames: the screen holds on the world with the title alone ---------- */
-.act { position: relative; height: 165svh; }
+.act { position: relative; height: 165svh; margin-bottom: 85svh; }   /* the gap lets the title leave the screen before any content arrives */
 .act-pin { position: sticky; top: 0; z-index: 0; height: 100svh; display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding: 0 var(--gutter) clamp(4.5rem, 11vh, 7rem); max-width: 1500px; margin: 0 auto; }
 .act-pin::before { content: ''; position: absolute; z-index: -1; left: 50%; width: 100vw; translate: -50% 0; top: 42%; bottom: 0; pointer-events: none;
-  background: linear-gradient(transparent, color-mix(in srgb, var(--paper) 82%, transparent) 62%, color-mix(in srgb, var(--paper) 94%, transparent)); }
+  background: linear-gradient(transparent, color-mix(in srgb, var(--paper) 86%, transparent) 45%, color-mix(in srgb, var(--paper) 86%, transparent) 78%, transparent); }
 .act .region-head { margin-bottom: 0; padding-right: 0; }
 .act .kanji { position: static; flex-shrink: 0; text-shadow: 0 0 20px var(--paper), 0 0 6px var(--paper), 0 0 2px var(--paper); }
 .region-body { min-height: 0; padding-top: clamp(1.5rem, 5vh, 3.5rem); }
+
+/* the title lifts away faster than the kanji as it leaves, so the two part like layers */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .act .region-head, .act .kanji { animation: act-out linear both; animation-timeline: view(); animation-range: exit 0% exit 85%; }
+    .act .kanji { --lift: -5vh; }
+  }
+}
+@keyframes act-out { to { opacity: 0; translate: 0 var(--lift, -16vh); } }
