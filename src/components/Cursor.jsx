@@ -1,5 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { heart } from '../world/sigils';
+
+// A heart curve, traced from its parametric equation.
+const heart = (n) => Array.from({ length: n + 1 }, (_, i) => {
+  const t = (i / n) * Math.PI * 2;
+  return [(16 * Math.sin(t) ** 3) / 17, (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t) + 2.5) / 17];
+});
 
 const d = heart(40).map(([x, y], i) => `${i ? 'L' : 'M'}${(x * 11).toFixed(2)} ${(-y * 11).toFixed(2)}`).join('') + 'Z';
 

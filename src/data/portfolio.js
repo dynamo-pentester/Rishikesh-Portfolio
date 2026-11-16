@@ -173,6 +173,30 @@ export const research = [
   },
 ];
 
+// Service record — taken from the résumé.
+export const campaigns = [
+  {
+    id: 'ale',
+    title: 'Alcatel-Lucent Enterprise',
+    short: 'Alcatel-Lucent',
+    role: 'Software Development Intern',
+    date: '2025',
+    points: [
+      'Built a FastAPI platform to ingest, parse and visualise AOS switch and HMON datasets.',
+      'Automated extraction from nested TAR archives and regex parsing of multi-file logs into structured JSON.',
+      'Plotly dashboards for CPU, memory and fan telemetry across 10K+ log entries.',
+    ],
+  },
+  {
+    id: 'rit',
+    title: 'Ramco Institute of Technology',
+    short: 'Ramco Institute',
+    role: 'B.E. Computer Science and Engineering',
+    date: '2023 — 2027',
+    points: ['Security research alongside the degree: kernel internals, detection engineering and coordinated vulnerability disclosure.'],
+  },
+];
+
 export const testimonials = [
   {
     quote:

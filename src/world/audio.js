@@ -1,5 +1,5 @@
 // All sound is synthesised in the browser — no audio files. Off until the visitor turns it on.
-let ctx = null, wind = null, enabled = false;
+let ctx = null, wind = null, enabled = false, cutBuffer = null;
 
 const noise = (seconds) => {
   const buf = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate);
@@ -16,8 +16,9 @@ export const sound = {
     if (enabled) {
       ctx ||= new (window.AudioContext || window.webkitAudioContext)();
       await ctx.resume();
+      if (!cutBuffer) fetch('/assets/audio/cut.mp3').then((r) => r.arrayBuffer()).then((b) => ctx.decodeAudioData(b)).then((b) => { cutBuffer = b; }).catch(() => {});
       this.startWind();
-      this.slash(0.5);
+      this.slash(0.4);
     } else if (wind) { wind.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3); }
     return enabled;
   },
@@ -36,6 +37,15 @@ export const sound = {
       wind = { gain };
     }
     wind.gain.gain.setTargetAtTime(0.05, ctx.currentTime, 1.5);
+  },
+
+  // The cut itself: the recorded katana sample, falling back to the synthesised blade if it has not loaded.
+  cut() {
+    if (!enabled || !ctx) return;
+    if (!cutBuffer) return this.slash(1);
+    const src = ctx.createBufferSource(); src.buffer = cutBuffer;
+    const g = ctx.createGain(); g.gain.value = 0.9;
+    src.connect(g).connect(ctx.destination); src.start();
   },
 
   // A blade through air: a swept noise "whoosh" plus a short metallic ring.

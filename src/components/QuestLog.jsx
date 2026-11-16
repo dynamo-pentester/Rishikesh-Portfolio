@@ -1,54 +1,29 @@
-import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { projects } from '../data/portfolio';
 import { store } from '../world/store';
+import Dossier from './Dossier';
 
-const NUM = ['壱', '弐', '参', '四', '五', '六'];
 const KANJI = { sentinel: '番人', securesplit: '分割', matcare: '母子', 'ale-logs': '記録' };
+const files = projects.map((p) => ({ ...p, kanji: KANJI[p.id] }));
 
-// Projects as a stack of old case files: each sheet slides over the last as you scroll,
-// while the tabs of the files beneath stay readable along the top.
+// Act I: the projects, as a deck of case files. The file on top is the shrine stone the world turns towards.
 export default function QuestLog() {
-  const stack = useRef(null);
-
-  // Whichever file is in view becomes the waypoint the world looks at.
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) store.focus = e.target.dataset.id; }),
-      { rootMargin: '-45% 0px -45% 0px' },
-    );
-    stack.current.querySelectorAll('.file').forEach((el) => io.observe(el));
-    return () => { io.disconnect(); store.focus = null; };
-  }, []);
-
+  const focus = useCallback((item) => { store.focus = item.id; }, []);
   return (
-    <section id="quests" data-region className="region">
-      <span className="kanji" aria-hidden="true">巻物</span>
-      <header className="region-head" data-reveal data-slash>
-        <p className="eyebrow">Act I — The scrolls · {projects.length} case files</p>
-        <h2 className="title-lg">Selected <em>work</em></h2>
-      </header>
-
-      <div className="files" ref={stack} style={{ '--n': projects.length }}>
-        {projects.map((p, i) => (
-          <article key={p.id} id={`file-${p.id}`} className="file" data-id={p.id} style={{ '--i': i }}>
-            <a className="file-tab" href={`#file-${p.id}`}><span aria-hidden="true">{NUM[i]}</span>{p.title}</a>
-            <div className="file-sheet">
-              <div className="file-spine" aria-hidden="true">
-                <span>{KANJI[p.id]}</span><i className="hanko">封</i>
-              </div>
-              <img className="file-sketch" src={p.cover} alt="" loading="lazy" />
-              <div className="file-body">
-                <p className="file-meta">File {String(i + 1).padStart(2, '0')} · {p.year} · {p.role}</p>
-                <h3>{p.title}</h3>
-                <p className="file-sub">{p.subtitle}</p>
-                <p className="file-desc">{p.description}</p>
-                <ul className="tags">{p.tags.map((t) => <li key={t}>{t}</li>)}</ul>
-                <a className="link" href={p.link} target="_blank" rel="noreferrer">View on GitHub</a>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
+    <div id="quests" data-region>
+      <Dossier id="scrolls" eyebrow={`Act I — The scrolls · ${projects.length} case files`} title={<>Selected <em>work</em></>} items={files} onActive={focus}>
+        {(p, i) => (
+          <>
+            <img className="sheet-sketch" src={p.cover} alt="" loading="lazy" />
+            <p className="sheet-meta">File {String(i + 1).padStart(2, '0')} · {p.year} · {p.role}</p>
+            <h3>{p.title}</h3>
+            <p className="sheet-sub">{p.subtitle}</p>
+            <p className="sheet-desc">{p.description}</p>
+            <ul className="tags">{p.tags.map((t) => <li key={t}>{t}</li>)}</ul>
+            <a className="link" href={p.link} target="_blank" rel="noreferrer">View on GitHub</a>
+          </>
+        )}
+      </Dossier>
+    </div>
   );
 }

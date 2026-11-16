@@ -37,7 +37,7 @@ export default function Spawn() {
       const q = Math.min(Math.max((p - 0.14) / 0.86, 0), 1);
       pin.current.style.setProperty('--q', q.toFixed(4));
       store.hero.q = q;
-      if (!cut && p > 0.14) { cut = true; store.hero.cut = true; pin.current.classList.add('is-cut'); sound.slash(1); }
+      if (!cut && p > 0.14) { cut = true; store.hero.cut = true; pin.current.classList.add('is-cut'); sound.cut(); }
       else if (cut && p < 0.05) { cut = false; store.hero.cut = false; pin.current.classList.remove('is-cut'); }
     };
     const onScroll = () => { raf ||= requestAnimationFrame(update); };

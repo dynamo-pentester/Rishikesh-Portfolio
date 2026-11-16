@@ -1,8 +1,10 @@
-import { profile, skillTree } from '../data/portfolio';
+import { profile, skillTree, campaigns } from '../data/portfolio';
+import Dossier from './Dossier';
 
 export default function Character() {
   return (
-    <section id="character" data-region className="region">
+    <div id="character" data-region>
+    <section className="region">
       <span className="kanji" aria-hidden="true">人物</span>
       <header className="region-head" data-reveal data-slash>
         <p className="eyebrow">Act II — The warrior</p>
@@ -41,5 +43,15 @@ export default function Character() {
         </div>
       </div>
     </section>
+    <Dossier id="campaigns" side="right" eyebrow="Service record" title={<>Where I have <em>served</em></>} kanji="戦歴" items={campaigns}>
+      {(c) => (
+        <>
+          <p className="sheet-meta">{c.date} · {c.role}</p>
+          <h3>{c.title}</h3>
+          <ul className="sheet-points">{c.points.map((pt) => <li key={pt}>{pt}</li>)}</ul>
+        </>
+      )}
+    </Dossier>
+    </div>
   );
 }

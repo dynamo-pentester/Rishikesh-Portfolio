@@ -66,6 +66,8 @@ export default function Hud() {
         {Object.entries(LABELS).map(([id, text]) => <span key={id} data-id={id}>{text}</span>)}
       </div>
 
+      <div className="hud-fade hud-fade-top" aria-hidden="true" />
+      <div className="hud-fade hud-fade-bottom" aria-hidden="true" />
       <header className="hud hud-top">
         <a href="#spawn" className="hud-brand">
           <span className="seal">RR</span>
