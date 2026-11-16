@@ -1,14 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-// A heart curve, traced from its parametric equation.
-const heart = (n) => Array.from({ length: n + 1 }, (_, i) => {
-  const t = (i / n) * Math.PI * 2;
-  return [(16 * Math.sin(t) ** 3) / 17, (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t) + 2.5) / 17];
-});
-
-const d = heart(40).map(([x, y], i) => `${i ? 'L' : 'M'}${(x * 11).toFixed(2)} ${(-y * 11).toFixed(2)}`).join('') + 'Z';
-
-// A small heart that turns in 3D (three crossed outlines) and trails the pointer. Mouse devices only.
+// A small katana whose point is the pointer: the blade catches red and tilts into a cut over anything clickable. Mouse devices only.
 export default function Cursor() {
   const ref = useRef(null);
 
@@ -21,7 +13,7 @@ export default function Cursor() {
     const over = (e) => el.classList.toggle('is-active', !!e.target.closest?.('a, button, [data-cursor]'));
     const leave = () => el.classList.remove('is-on');
     const tick = () => {
-      x += (tx - x) * 0.22; y += (ty - y) * 0.22;
+      x += (tx - x) * 0.45; y += (ty - y) * 0.45;
       el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       raf = requestAnimationFrame(tick);
     };
@@ -40,11 +32,13 @@ export default function Cursor() {
 
   return (
     <div className="cursor" ref={ref} aria-hidden="true">
-      <div className="cursor-spin">
-        {[0, 60, 120].map((r) => (
-          <svg key={r} viewBox="-13 -13 26 26" style={{ transform: `rotateY(${r}deg)` }}><path d={d} /></svg>
-        ))}
-      </div>
+      <svg className="cursor-blade" viewBox="0 0 46 46" width="46" height="46">
+        <path className="cb-steel" d="M1 1 C9 6 19 15 28.6 26.4 L26.4 28.6 C16 18 7.5 9 1 1Z" />
+        <path className="cb-edge" d="M1 1 C9 6 19 15 28.6 26.4" />
+        <ellipse className="cb-guard" cx="28.4" cy="28.4" rx="4.6" ry="1.7" transform="rotate(-45 28.4 28.4)" />
+        <path className="cb-grip" d="M29.6 29.6 L41 41" />
+        <path className="cb-wrap" d="M32 32 l1.6 1.6 M35 35 l1.6 1.6 M38 38 l1.6 1.6" />
+      </svg>
     </div>
   );
 }

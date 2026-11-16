@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { profile, skillTree, campaigns } from '../data/portfolio';
 import ActTitle from './ActTitle';
 
-// Act I: who he is, what he carries, and where he has served — the service record is a hand scroll that unrolls sideways.
+// Act I: who he is, what he carries, and where he has served — the service record is four rolled scrolls, each opened by hand.
 export default function Character() {
+  const [open, setOpen] = useState(null);
   return (
     <div id="character" data-region>
       <ActTitle eyebrow="Act I — The warrior" kanji="人物">Part adversary, <em>part architect</em></ActTitle>
@@ -46,20 +48,25 @@ export default function Character() {
           <p className="eyebrow">Service record · 戦歴</p>
           <h2 className="title-md">Where I have <em>served</em></h2>
         </header>
-        <div className="emaki" data-reveal>
-          <i className="emaki-rod" aria-hidden="true" />
-          <div className="emaki-paper">
-            {campaigns.map((c, i) => (
-              <article key={c.id} className="emaki-panel">
-                <span className="emaki-mark" aria-hidden="true">{['壱', '弐', '参', '四'][i]}</span>
-                <p className="sheet-meta">{c.date} · {c.role}</p>
-                <h3>{c.title}</h3>
-                <ul className="sheet-points">{c.points.map((pt) => <li key={pt}>{pt}</li>)}</ul>
-              </article>
-            ))}
-          </div>
-          <i className="emaki-rod" aria-hidden="true" />
-        </div>
+        <ol className="scrolls">
+          {campaigns.map((c, i) => (
+            <li key={c.id} className={`scroll${open === c.id ? ' is-open' : ''}`} data-reveal style={{ '--d': `${i * 90}ms` }}>
+              <button type="button" className="scroll-roll" aria-expanded={open === c.id} onClick={() => setOpen(open === c.id ? null : c.id)}>
+                <span className="scroll-mark" aria-hidden="true">{['壱', '弐', '参', '四'][i]}</span>
+                <span className="scroll-name">{c.title}</span>
+                <span className="scroll-date">{c.date}</span>
+                <span className="scroll-cue">{open === c.id ? 'Roll up' : 'Unroll'}</span>
+              </button>
+              <div className="scroll-sheet">
+                <div className="scroll-inner">
+                  <p className="sheet-meta">{c.date} · {c.role}</p>
+                  <ul className="sheet-points">{c.points.map((pt) => <li key={pt}>{pt}</li>)}</ul>
+                </div>
+              </div>
+              <i className="scroll-rod" aria-hidden="true" />
+            </li>
+          ))}
+        </ol>
       </section>
     </div>
   );
