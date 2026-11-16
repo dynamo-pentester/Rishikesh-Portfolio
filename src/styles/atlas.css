@@ -654,7 +654,7 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 @media (hover: hover) { .ema-rack li:hover .ema { rotate: calc(var(--tilt) * -1.6); } }
 @media (prefers-reduced-motion: reduce) { .nobori { animation: none; } .ema { transition: none; } }
 
-@media (min-width: 900px) { .ema-rack { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1000px; } }
+@media (min-width: 900px) { .ema-rack { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 1180px; } }
 
 /* the brass pin closes the fan again */
 .fan-pin { cursor: pointer; border: 0; padding: 0; transition: scale 0.3s var(--ease), box-shadow 0.3s ease; }

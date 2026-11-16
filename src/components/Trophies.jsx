@@ -4,6 +4,9 @@ import ActTitle from './ActTitle';
 const sealed = { id: 'sealed', target: 'Sealed', title: 'Further reports with Google, Microsoft, n8n and others', severity: 'Under coordinated disclosure', status: 'Opened when each vendor publishes', date: '2026' };
 const notices = [...research, sealed];
 
+// the TryHackMe ranking already flies as a banner, so it is not hung a second time
+const plaques = ctfEvents.filter((e) => !/tryhackme/i.test(e.title));
+
 const HEADLINE = [
   { value: 'Top 3%', label: 'TryHackMe — global ranking' },
   { value: '#44', label: 'Apoorv CTF 2026 — worldwide' },
@@ -34,7 +37,7 @@ export default function Trophies() {
           <h2 className="title-md">Hung at the <em>shrine</em></h2>
         </header>
         <ul className="ema-rack">
-          {ctfEvents.map((e, i) => (
+          {plaques.map((e, i) => (
             <li key={e.id} data-reveal style={{ '--d': `${(i % 4) * 80}ms`, '--tilt': `${[-1.4, 0.9, -0.6, 1.5, -1, 0.5][i % 6]}deg`, '--wind': `${-(i * 0.83) % 5}s`, '--pace': `${4.2 + (i % 4) * 0.55}s` }}>
               <article className="ema">
                 <p className="ema-meta">{e.type} · {e.date}</p>
