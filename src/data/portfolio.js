@@ -5,10 +5,10 @@ export const profile = {
   role: 'Security Engineer',
   tagline: 'Building at the intersection of offense and architecture.',
   intro:
-    'Security-focused engineer with a passion for kernel internals, offensive testing, and building detection systems — uncovering vulnerabilities before they become incidents.',
+    'Security-focused engineer with a passion for kernel internals, offensive testing, and building detection systems, uncovering vulnerabilities before they become incidents.',
   location: 'Tamil Nadu, India',
   email: 'rishikesh091105@gmail.com',
-  available: 'Open to internships & junior roles — 2025',
+  available: 'Full-time at Cynox Security · open to conversations',
   social: [
     { label: 'GitHub', href: 'https://github.com/dynamo-pentester' },
     { label: 'LinkedIn', href: 'https://linkedin.com/in/rishikesh-r-196b5a290' },
@@ -18,7 +18,7 @@ export const profile = {
 };
 
 export const stats = [
-  { value: 'Top 5%', label: 'TryHackMe Global' },
+  { value: 'Top 3%', label: 'TryHackMe Global' },
   { value: '#44', label: 'Apoorv CTF 2026' },
   { value: '3+', label: 'Major Projects' },
   { value: '5', label: 'Certifications' },
@@ -62,6 +62,9 @@ export const projects = [
     year: '2025',
     tags: ['C', 'Linux LKM', 'Windows KMDF', 'kprobes', 'Netlink', 'Web3.py', 'Solidity'],
     image: '/assets/project_sentinel.png',
+    cover: '/assets/covers/sentinel.svg',
+    accent: '#7dffd0',
+    disciplines: ['Kernel', 'Detection', 'Forensics'],
     link: 'https://github.com/dynamo-pentester',
   },
   {
@@ -69,11 +72,14 @@ export const projects = [
     title: 'SecureSplit',
     subtitle: 'Distributed Secure Media Storage',
     description:
-      'Implemented a two-share visual cryptography system — original images are XOR-split into a local encrypted noise share and a key noise share uploaded to IPFS (Pinata), ensuring neither share alone reveals any information about the original.',
+      'Implemented a two-share visual cryptography system: original images are XOR-split into a local encrypted noise share and a key noise share uploaded to IPFS (Pinata), ensuring neither share alone reveals any information about the original.',
     role: 'Security Engineer',
     year: '2024',
     tags: ['Python', 'FastAPI', 'IPFS', 'NumPy', 'Cryptography'],
     image: '/assets/project_securesplit.png',
+    cover: '/assets/covers/securesplit.svg',
+    accent: '#e0b3ff',
+    disciplines: ['Cryptography', 'Storage', 'Backend'],
     link: 'https://github.com/dynamo-pentester',
   },
   {
@@ -86,14 +92,139 @@ export const projects = [
     year: '2025',
     tags: ['Python', 'Flask', 'PostgreSQL', 'Scikit-learn', 'Web3.py', 'ESP32'],
     image: '/assets/project_matcare.png',
+    cover: '/assets/covers/matcare.svg',
+    accent: '#ffb199',
+    disciplines: ['IoT', 'Applied ML', 'Backend'],
     link: 'https://github.com/dynamo-pentester',
+  },
+  {
+    id: 'ale-logs',
+    title: 'Log Analysis Platform',
+    subtitle: 'Switch Log & Telemetry Investigation, ALE Internship',
+    description:
+      'Built a FastAPI-based platform at Alcatel-Lucent Enterprise to ingest, parse, and visualize AOS switch and HMON datasets: automated extraction from nested TAR archives, regex parsing of multi-file logs into structured JSON, and Plotly dashboards for CPU, memory, and fan telemetry across 10K+ log entries.',
+    role: 'Software Development Intern',
+    year: '2025',
+    tags: ['Python', 'FastAPI', 'Regex', 'Plotly', 'JSON'],
+    image: '/assets/covers/logs.svg',
+    cover: '/assets/covers/logs.svg',
+    accent: '#ffc46b',
+    disciplines: ['Backend', 'Log Analysis', 'Dashboards'],
+    link: 'https://github.com/dynamo-pentester',
+  },
+];
+
+// Bento tiles for the "At a glance" section — every figure comes from the résumé.
+export const highlights = [
+  { id: 'thm', size: 'lg', kicker: 'TryHackMe', value: 'Top 3%', note: 'Global ranking across exploitation, privilege-escalation and post-exploitation labs.' },
+  { id: 'skills', size: 'md', kicker: 'IndiaSkills Southern Regionals 2026', value: 'Medallion of Excellence', note: 'Cyber Security track.' },
+  { id: 'ale', size: 'md', kicker: 'Alcatel-Lucent Enterprise', value: '10K+ log entries', note: 'Parsed and visualised by the log analysis platform built during the 2025 internship.' },
+  { id: 'ctf', size: 'sm', kicker: 'Apoorv CTF 2026', value: '#44', note: 'Worldwide rank.' },
+  { id: 'edu', size: 'sm', kicker: 'B.E. CSE, Ramco Institute of Technology', value: '2027', note: 'Graduating class.' },
+];
+
+// Published security research only. Reports still under coordinated disclosure are
+// deliberately not described here — add them once the vendor has published.
+export const research = [
+  {
+    id: 'getid3',
+    target: 'getID3',
+    title: 'Memory-exhaustion denial of service via crafted QuickTime atoms',
+    severity: 'High · CVSS 7.5',
+    status: 'Advisory published · CVE requested',
+    date: 'Oct 2026',
+    link: 'https://github.com/JamesHeinrich/getID3/security/advisories/GHSA-4pp3-6hmx-mfmg',
+  },
+  {
+    id: 'ghost',
+    target: 'Ghost',
+    title: 'Disclosure of deleted and hidden comment content via Members Comments API filters',
+    severity: 'Moderate · CVSS 5.3',
+    status: 'Advisory published · CVE requested',
+    date: 'Nov 2026',
+    link: 'https://github.com/TryGhost/Ghost/security/advisories/GHSA-9c5c-w94h-xp32',
+  },
+  {
+    id: 'typemill',
+    target: 'Typemill',
+    title: 'Bypass of the two-factor authentication brute-force protection',
+    severity: 'Moderate · CVSS 6.8',
+    status: 'Advisory published · co-reported · CVE requested',
+    date: 'Jul 2026',
+    link: 'https://github.com/typemill/typemill/security/advisories/GHSA-3vp6-4p8g-4hmx',
+  },
+  {
+    id: 'langchain-postgres',
+    target: 'langchain-postgres',
+    title: 'Security advisory GHSA-39qm-gv6q-f43r',
+    severity: 'See advisory',
+    status: 'Advisory published · CVE requested',
+    date: '2026',
+    link: 'https://github.com/langchain-ai/langchain-postgres/security/advisories/GHSA-39qm-gv6q-f43r',
+  },
+  {
+    id: 'tensorflow',
+    target: 'TensorFlow',
+    title: 'Heap out-of-bounds read in FractionalMaxPoolGrad',
+    severity: 'Memory safety',
+    status: 'Reported to Google · fix submitted',
+    date: 'Oct 2026',
+    link: 'https://github.com/tensorflow/tensorflow/pull/126911',
+  },
+];
+
+// Service record — taken from the résumé.
+export const campaigns = [
+  {
+    id: 'cynox',
+    title: 'Cynox Security LLP',
+    short: 'Cynox Security',
+    role: 'Trainee Cyber Security Analyst',
+    date: 'Aug 2026 to Present',
+    points: [
+      'CERT-In empanelled auditor. Joined as Cyber Security Analyst intern in August 2026, full-time trainee since November 2026.',
+      'Vulnerability assessment and penetration testing of web applications.',
+      'Android application security testing.',
+    ],
+  },
+  {
+    id: 'gssoc',
+    title: 'GirlScript Summer of Code',
+    short: 'GSSoC',
+    role: 'Open Source Developer',
+    date: 'May to Oct 2026',
+    points: [
+      'GSSoC Champion ’26: 10k points through merged pull requests.',
+      'Top 100 out of 51k participants.',
+      'Legendary Merge: 100 merged PRs across two real-time repositories.',
+    ],
+  },
+  {
+    id: 'ale',
+    title: 'Alcatel-Lucent Enterprise',
+    short: 'Alcatel-Lucent',
+    role: 'Software Development Intern',
+    date: '2025',
+    points: [
+      'Built a FastAPI platform to ingest, parse and visualise AOS switch and HMON datasets.',
+      'Automated extraction from nested TAR archives and regex parsing of multi-file logs into structured JSON.',
+      'Plotly dashboards for CPU, memory and fan telemetry across 10K+ log entries.',
+    ],
+  },
+  {
+    id: 'rit',
+    title: 'Ramco Institute of Technology',
+    short: 'Ramco Institute',
+    role: 'B.E. Computer Science and Engineering',
+    date: '2023 to 2027',
+    points: ['Security research alongside the degree: kernel internals, detection engineering and coordinated vulnerability disclosure.'],
   },
 ];
 
 export const testimonials = [
   {
     quote:
-      'Rishikesh approaches security with a rare depth — equal parts adversary mindset and careful architect. His kernel-level work on Sentinel-X reflects a maturity far beyond his years.',
+      'Rishikesh approaches security with a rare depth: equal parts adversary mindset and careful architect. His kernel-level work on Sentinel-X reflects a maturity far beyond his years.',
     name: 'Industry Mentor',
     title: 'Senior Security Engineer',
   },
@@ -105,7 +236,7 @@ export const testimonials = [
   },
   {
     quote:
-      'Top 5% globally on TryHackMe, Medallion of Excellence at IndiaSkills — the results speak for themselves. Calm, surgical, and relentlessly curious.',
+      'Top 5% globally on TryHackMe, Medallion of Excellence at IndiaSkills: the results speak for themselves. Calm, surgical, and relentlessly curious.',
     name: 'Competition Evaluator',
     title: 'IndiaSkills Cyber Security',
   },
@@ -115,6 +246,14 @@ export const stack = [
   'C/C++', 'Python', 'Linux LKM', 'kprobes', 'Netlink', 'FastAPI', 'Flask',
   'PostgreSQL', 'Docker', 'Burp Suite', 'Metasploit', 'Wireshark', 'Volatility',
   'Web3.py', 'Solidity', 'Scikit-learn',
+];
+
+// Skill tree — grouped exactly as on the résumé.
+export const skillTree = [
+  { branch: 'Kernel & Systems', skills: ['C/C++', 'Linux Kernel Modules', 'kprobes', 'Netlink', 'Syscall Internals', 'Socket Programming'] },
+  { branch: 'Security', skills: ['VAPT', 'OWASP Top 10', 'Network Pentesting', 'Digital Forensics', 'Log & Traffic Analysis'] },
+  { branch: 'Tools', skills: ['Burp Suite', 'Metasploit', 'Nmap', 'Wireshark', 'SQLmap', 'Volatility'] },
+  { branch: 'Backend & Data', skills: ['Python', 'FastAPI', 'Flask', 'REST APIs', 'PostgreSQL', 'MongoDB'] },
 ];
 
 export const navItems = [
@@ -127,6 +266,20 @@ export const navItems = [
 export const aboutImage = '/assets/me.jpg';
 
 export const certificates = [
+  {
+    id: 'cisco-jca',
+    title: 'Junior Cybersecurity Analyst Career Path',
+    issuer: 'Cisco Networking Academy',
+    date: '2026',
+    link: 'https://www.credly.com/badges/008db65c-5a3e-4e86-a0a1-026642c41378/linked_in_profile',
+  },
+  {
+    id: 'meity-ce',
+    title: 'Cybersecurity Essentials',
+    issuer: 'Ministry of Electronics and IT',
+    date: '2026',
+    link: 'https://fsp-assessment-certificates.s3.ap-southeast-1.amazonaws.com/%27/s3/buckets/fsp-assessment-certificates%27/RISHIKESH%2BR_54906.pdf',
+  },
   {
     id: 1,
     title: 'Software Engineering Professional Certificate',
@@ -199,15 +352,6 @@ export const certificates = [
     description: 'Professional penetration testing workflows, reporting, and remediation strategies.',
     link: 'https://www.linkedin.com/learning/certificates/738417bdb06577da09b3edbe9d90d07a86f173244970cd954f98b9dfd99433cc',
   },
-  {
-    id: 9,
-    title: 'Pre-Security Pathway',
-    issuer: 'TryHackMe',
-    date: '2025',
-    credential: 'THM-PS',
-    description: 'Training covering fundamental security concepts, network basics, and hands-on labs.',
-    link: 'https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-JTL8EBLS6U.pdf',
-  },
 ];
 
 export const ctfEvents = [
@@ -216,8 +360,8 @@ export const ctfEvents = [
     title: 'TryHackMe Platform',
     type: 'Training Platform',
     date: 'Ongoing',
-    placement: 'Top 5% Global Rank',
-    description: 'Ranked in the top 5% globally, completing advanced labs in exploitation, privilege escalation, and post-exploitation.',
+    placement: 'Top 3% Global Rank',
+    description: 'Ranked in the top 3% globally, completing advanced labs in exploitation, privilege escalation, and post-exploitation.',
   },
   {
     id: 2,
