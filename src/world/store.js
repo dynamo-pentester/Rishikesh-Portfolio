@@ -6,7 +6,8 @@ export const store = {
   coords: { x: 0, y: 0, alt: 0 },
   region: 0,
   labels: [],         // [{ id, x, y, visible }] projected marker positions
+  hero: { q: 0, cut: false }, // opening shot: how far the halves have parted, and whether the blade has fallen
   ready: false,
 };
 
-export const REGIONS = ['Spawn point', 'Quest log', 'Character', 'Disciplines', 'Trophies', 'Campfire'];
+export const REGIONS = ['The gate', 'The scrolls', 'The warrior', 'The arsenal', 'War record', 'Signal fire'];

@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { heightAt, SEA } from './noise';
 import { sigils } from './sigils';
 import { store } from './store';
@@ -13,7 +15,7 @@ export const WAYPOINTS = {
 
 // One camera stop per page section: position, altitude above ground, look-at, fog range.
 const STOPS = [
-  { p: [0, 104], alt: 30, l: [0, 40], fog: [70, 230] },
+  { p: [0, 104], alt: 7, l: [0, -60], fog: [60, 260] },
   { p: [-6, 46], alt: 20, l: [2, -14], fog: [60, 190] },
   { p: [46, 6], alt: 15, l: [78, -52], fog: [50, 170] },
   { p: [80, -62], alt: 19, l: [34, -112], fog: [50, 180] },
@@ -42,7 +44,7 @@ const noiseGlsl = /* glsl */ `
 
 // Watercolour ground: spring meadow by height, a sand line at the shore, still water with a light shimmer.
 const terrainFrag = /* glsl */ `
-  uniform vec3 uLandLo; uniform vec3 uLandHi; uniform vec3 uSand; uniform vec3 uWater; uniform vec3 uInk; uniform vec3 uSkyLow;
+  uniform vec3 uLandLo; uniform vec3 uLandHi; uniform vec3 uSand; uniform vec3 uWater; uniform vec3 uInk; uniform vec3 uSkyLow; uniform vec3 uRipple;
   uniform vec2 uFog; uniform float uSea; uniform float uTime;
   varying float vH; varying float vDist; varying vec2 vXZ;
   ${noiseGlsl}
@@ -57,7 +59,7 @@ const terrainFrag = /* glsl */ `
     land = mix(uSand, land, smoothstep(uSea + 0.05, uSea + 1.2, vH));
     land = mix(land, uInk, max(lineAt(vH / 1.6) * 0.13, lineAt(vH / 8.0) * 0.34));
     float ripple = sin(vXZ.x * 0.9 + uTime * 0.8 + sin(vXZ.y * 0.7) * 2.0) * sin(vXZ.y * 1.7 - uTime * 0.5);
-    vec3 water = mix(uWater, uSkyLow, 0.3 * blot) + smoothstep(0.72, 1.0, ripple) * 0.14;
+    vec3 water = mix(uWater, uSkyLow, 0.3 * blot) + uRipple * smoothstep(0.6, 1.0, ripple) * 0.5;
     vec3 col = mix(land, water, 1.0 - step(uSea + 0.02, vH));
     gl_FragColor = vec4(mix(col, uSkyLow, smoothstep(uFog.x, uFog.y, vDist)), 1.0);
   }`;
@@ -65,16 +67,25 @@ const terrainFrag = /* glsl */ `
 // The sky is one screen-filling sheet: a soft gradient, slow clouds, and stars after dark.
 const skyVert = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 1.0, 1.0); }`;
 const skyFrag = /* glsl */ `
-  uniform vec3 uSkyTop; uniform vec3 uSkyLow; uniform vec3 uCloud; uniform float uTime; uniform float uAspect; uniform float uStars;
+  uniform vec3 uSkyTop; uniform vec3 uSkyLow; uniform vec3 uCloud; uniform vec3 uMoonCol; uniform vec2 uMoon; uniform float uMoonR; uniform float uTime; uniform float uAspect; uniform float uStars;
   varying vec2 vUv;
   ${noiseGlsl}
   void main() {
-    vec3 c = mix(uSkyLow, uSkyTop, smoothstep(0.3, 1.0, vUv.y));
-    vec2 p = vec2(vUv.x * uAspect * 2.4 + uTime * 0.01, vUv.y * 6.0);
+    vec3 c = mix(uSkyLow, uSkyTop, smoothstep(0.22, 1.0, vUv.y));
+    vec2 g = floor(vUv * vec2(uAspect, 1.0) * 170.0);
+    c += step(0.994, hash(g)) * uStars * smoothstep(0.4, 0.9, vUv.y) * (0.5 + 0.5 * sin(uTime * 2.0 + hash(g + 1.0) * 6.28)) * 0.7;
+    // the blood moon: mottled surface, darkened limb, a wide red halo
+    vec2 q = (vUv - uMoon) * vec2(uAspect, 1.0);
+    float d = length(q);
+    c += uMoonCol * (0.5 * exp(-max(d - uMoonR, 0.0) * 7.0) + 0.16 * exp(-max(d - uMoonR, 0.0) * 1.6));
+    float seas = vn(q * 9.0 + 3.0) * 0.5 + vn(q * 23.0 + 11.0) * 0.3 + vn(q * 61.0) * 0.2;
+    vec3 face = uMoonCol * (0.5 + 0.85 * seas) * (1.0 - 0.5 * smoothstep(uMoonR * 0.35, uMoonR, d));
+    face += vec3(0.25, 0.1, 0.06) * smoothstep(0.62, 0.9, seas);
+    c = mix(c, face, smoothstep(uMoonR, uMoonR - 0.004, d));
+    // thin clouds drifting across it
+    vec2 p = vec2(vUv.x * uAspect * 2.0 + uTime * 0.012, vUv.y * 7.0);
     float n = vn(p) * 0.55 + vn(p * 2.1 + 7.0) * 0.3 + vn(p * 4.3 + 3.0) * 0.15;
-    c = mix(c, uCloud, smoothstep(0.5, 0.74, n) * smoothstep(0.4, 0.75, vUv.y) * 0.9);
-    vec2 g = floor(vUv * vec2(uAspect, 1.0) * 150.0);
-    c += step(0.993, hash(g)) * uStars * smoothstep(0.45, 0.9, vUv.y) * (0.55 + 0.45 * sin(uTime * 2.0 + hash(g + 1.0) * 6.28));
+    c = mix(c, uCloud, smoothstep(0.52, 0.8, n) * smoothstep(0.3, 0.7, vUv.y) * 0.7);
     gl_FragColor = vec4(c, 1.0);
   }`;
 
@@ -150,6 +161,7 @@ export class World {
     this.buildGrove();
     this.buildPetals();
     this.buildMarkers();
+    this.buildGuardian();
     this.setTheme();
     this.resize();
 
@@ -177,27 +189,23 @@ export class World {
       uniforms: {
         uPaper: { value: new THREE.Color() }, uInk: { value: new THREE.Color() },
         uLandLo: { value: new THREE.Color() }, uLandHi: { value: new THREE.Color() }, uSand: { value: new THREE.Color() },
-        uWater: { value: new THREE.Color() }, uSkyLow: { value: new THREE.Color() },
+        uWater: { value: new THREE.Color() }, uSkyLow: { value: new THREE.Color() }, uRipple: { value: new THREE.Color() },
         uFog: { value: this.cam.fog }, uSea: { value: SEA }, uTime: { value: 0 },
       },
     });
     this.scene.add(new THREE.Mesh(geo, this.terrainMat));
   }
 
-  // The sun (or moon) — a flat disc traced from points, hung far to the north.
+  // The sky sheet carries the blood moon, stars and cloud.
   buildSky() {
     this.skyMat = new THREE.ShaderMaterial({
       vertexShader: skyVert, fragmentShader: skyFrag, depthTest: false, depthWrite: false,
-      uniforms: { uSkyTop: { value: new THREE.Color() }, uSkyLow: this.terrainMat.uniforms.uSkyLow, uCloud: { value: new THREE.Color() }, uTime: { value: 0 }, uAspect: { value: 1 }, uStars: { value: 0 } },
+      uniforms: { uSkyTop: { value: new THREE.Color() }, uSkyLow: this.terrainMat.uniforms.uSkyLow, uCloud: { value: new THREE.Color() }, uMoonCol: { value: new THREE.Color() }, uMoon: { value: new THREE.Vector2(0.74, 0.6) }, uMoonR: { value: 0.2 }, uTime: { value: 0 }, uAspect: { value: 1 }, uStars: { value: 1 } },
     });
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.skyMat);
     sky.frustumCulled = false; sky.renderOrder = -10;
     this.scene.add(sky);
-    const shape = new THREE.Shape(Array.from({ length: 72 }, (_, i) => new THREE.Vector2(Math.cos((i / 72) * 6.2832) * 46, Math.sin((i / 72) * 6.2832) * 46)));
-    this.sunMat = new THREE.MeshBasicMaterial();
-    this.sun = new THREE.Mesh(new THREE.ShapeGeometry(shape, 1), this.sunMat);
-    this.sun.position.set(-28, 58, -470);
-    this.scene.add(this.sun);
+    this.sunMat = { color: new THREE.Color(), dispose() {} };
   }
 
   // Cherry trees grown branch by branch from a seeded rule — every one is different.
@@ -260,6 +268,55 @@ export class World {
     this.scene.add(pts);
   }
 
+  // The guardian: the Blender-built samurai, drawn in his own pass over the world so he stays
+  // framed against the moon. Lit almost entirely from behind — red rim light, a whisper of fill.
+  buildGuardian() {
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    const scene = (this.heroScene = new THREE.Scene());
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environmentIntensity = 0.22;
+    pmrem.dispose();
+    const rimA = new THREE.DirectionalLight(0xff1a30, 9); rimA.position.set(-3.2, 2.6, -4);
+    const rimB = new THREE.DirectionalLight(0xff3b2a, 7); rimB.position.set(3.6, 3.2, -3.2);
+    const top = new THREE.DirectionalLight(0xff5a4a, 1.6); top.position.set(0, 6, -1);
+    const fill = new THREE.DirectionalLight(0x6f7fb0, 0.45); fill.position.set(-1.5, 1.6, 5);
+    scene.add(rimA, rimB, top, fill);
+    this.heroCam = new THREE.PerspectiveCamera(26, 1, 0.1, 60);
+    this.hero = { arm: null, model: null, mats: [], angle: 0.72, alpha: 1 };
+    new GLTFLoader().load('/assets/models/samurai.glb', (gltf) => {
+      if (this.disposed) return;
+      const model = gltf.scene;
+      model.traverse((o) => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => this.hero.mats.includes(m) || this.hero.mats.push(m)); });
+      this.hero.model = model;
+      this.hero.arm = model.getObjectByName('SwordArm');
+      scene.add(model);
+    });
+  }
+
+  renderGuardian(t, dt) {
+    const h = this.hero;
+    if (!h.model) return;
+    const q = store.hero.q;
+    const alpha = 1 - smooth(Math.min(q * 1.5, 1));
+    if (alpha <= 0.01) return;
+    // the strike is fast; the return to guard is slow
+    const target = store.hero.cut ? -2.55 : 0.72;
+    h.angle += (target - h.angle) * (this.reduced ? 1 : 1 - Math.exp(-dt * (store.hero.cut ? 34 : 4)));
+    h.arm.rotation.z = h.angle;
+    if (alpha !== h.alpha) { h.alpha = alpha; h.mats.forEach((m) => { m.transparent = alpha < 1; m.opacity = alpha; }); }
+    const sway = this.reduced ? 0 : Math.sin(t * 0.7);
+    h.model.rotation.y = -0.22 + sway * 0.035 + store.pointer.x * 0.1;
+    h.model.position.y = sway * 0.006;
+    const wide = innerWidth > 900;
+    this.heroCam.position.set(0, 1.12, (wide ? 5.6 : 9.4) - q * 2.4);
+    this.heroCam.lookAt(0, 1.12, 0);
+    this.renderer.autoClear = false;
+    this.renderer.clearDepth();
+    this.renderer.render(this.heroScene, this.heroCam);
+    this.renderer.autoClear = true;
+  }
+
   // The gate at the spawn point — drawn line by line, facing the arriving camera.
   buildGate(g) {
     const P = (pts) => new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts.map(([x, y, z = 0]) => new THREE.Vector3(x, y, z))), this.sunMatLine);
@@ -318,7 +375,8 @@ export class World {
     u.uLandLo.value.copy(c('--land-lo')); u.uLandHi.value.copy(c('--land-hi')); u.uSand.value.copy(c('--sand'));
     u.uWater.value.copy(c('--water')); u.uSkyLow.value.copy(c('--sky-low'));
     this.skyMat.uniforms.uSkyTop.value.copy(c('--sky-top')); this.skyMat.uniforms.uCloud.value.copy(c('--cloud'));
-    this.skyMat.uniforms.uStars.value = document.documentElement.dataset.theme === 'night' ? 1 : 0;
+    this.skyMat.uniforms.uMoonCol.value.copy(c('--moon'));
+    u.uInk.value.copy(c('--contour')); u.uRipple.value.copy(c('--moon'));
     this.treeMat.uniforms.uInk.value.copy(c('--bark'));
     this.renderer.setClearColor(paper, 1);
   }
@@ -332,8 +390,15 @@ export class World {
     // On wide screens the text sits left, so the world is framed to the right of centre.
     if (w > 900) this.camera.setViewOffset(w, h, -w * 0.13, 0, w, h); else this.camera.clearViewOffset();
     this.camera.updateProjectionMatrix();
+    this.heroCam.aspect = w / h;
+    // frame the guardian in front of the moon: right of centre on wide screens, upper centre on phones
+    if (w > 900) this.heroCam.setViewOffset(w, h, -w * 0.235, -h * 0.02, w, h); else this.heroCam.setViewOffset(w, h, 0, h * 0.2, w, h);
+    this.heroCam.updateProjectionMatrix();
     const scale = this.renderer.domElement.height / (2 * Math.tan((this.camera.fov * Math.PI) / 360));
     this.skyMat.uniforms.uAspect.value = w / h;
+    // The moon hangs right of centre on wide screens, high and central on phones.
+    this.skyMat.uniforms.uMoon.value.set(w > 900 ? 0.735 : 0.5, w > 900 ? 0.6 : 0.74);
+    this.skyMat.uniforms.uMoonR.value = w > 900 ? 0.27 : 0.15;
     this.blossomMat.uniforms.uScale.value = scale;
     this.petalMat.uniforms.uScale.value = scale;
   }
@@ -405,6 +470,7 @@ export class World {
     this.petalMat.uniforms.uCam.value.copy(this.camera.position);
     store.ready = true;
     this.renderer.render(this.scene, this.camera);
+    this.renderGuardian(t, dt);
   }
 
   dispose() {

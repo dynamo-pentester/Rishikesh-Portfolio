@@ -1,23 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { navItems, profile, projects } from '../data/portfolio';
 import { store, REGIONS } from '../world/store';
+import { sound } from '../world/audio';
 
 const pad = (n) => String(n).padStart(2, '0');
 const POINTS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const DEG = 3; // px per degree on the compass strip
-const LABELS = { spawn: 'Spawn', campfire: 'Campfire', ...Object.fromEntries(projects.map((p) => [p.id, p.title])) };
+const LABELS = { spawn: 'The gate', campfire: 'Signal fire', ...Object.fromEntries(projects.map((p) => [p.id, p.title])) };
 const TRAVEL = [
-  { href: '#spawn', label: 'Spawn point' },
-  { href: '#quests', label: 'Quest log' },
-  { href: '#character', label: 'Character' },
-  { href: '#disciplines', label: 'Disciplines' },
-  { href: '#trophies', label: 'Trophies' },
-  { href: '#campfire', label: 'Campfire' },
+  { href: '#spawn', label: 'The gate' },
+  { href: '#quests', label: 'The scrolls' },
+  { href: '#character', label: 'The warrior' },
+  { href: '#disciplines', label: 'The arsenal' },
+  { href: '#trophies', label: 'War record' },
+  { href: '#campfire', label: 'Signal fire' },
 ];
 
 export default function Hud() {
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'day');
+  const [audible, setAudible] = useState(false);
   const strip = useRef(null), coords = useRef(null), region = useRef(null), labels = useRef(null), bar = useRef(null);
 
   // One rAF loop writes the live readouts straight to the DOM.
@@ -32,6 +33,7 @@ export default function Hud() {
       const max = document.documentElement.scrollHeight - innerHeight;
       if (bar.current) bar.current.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
       if (labels.current) {
+        labels.current.style.opacity = store.region === 0 ? '0' : '';   // keep the opening shot clean
         for (const l of store.labels) {
           const el = labels.current.querySelector(`[data-id="${l.id}"]`);
           if (!el) continue;
@@ -56,13 +58,7 @@ export default function Hud() {
   }, []);
   useEffect(() => { document.body.style.overflow = open ? 'hidden' : ''; }, [open]);
 
-  const toggleTheme = () => {
-    const next = theme === 'day' ? 'night' : 'day';
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem('atlas-theme', next); } catch { /* private mode */ }
-    setTheme(next);
-    window.dispatchEvent(new Event('themechange'));
-  };
+  const toggleSound = async () => setAudible(await sound.toggle());
 
   return (
     <>
@@ -87,8 +83,9 @@ export default function Hud() {
 
         <nav className="hud-actions" aria-label="Primary">
           <a className="hud-btn hud-wide" href="/Rishikesh-R.pdf" target="_blank" rel="noreferrer">Résumé</a>
-          <button type="button" className="hud-btn hud-icon" onClick={toggleTheme} aria-label={`Switch to ${theme === 'day' ? 'night' : 'day'}`}>
-            <span className={`orb-icon ${theme}`} />
+          <button type="button" className="hud-btn" onClick={toggleSound} aria-pressed={audible}>
+            <span className={`sound-icon${audible ? ' is-on' : ''}`} aria-hidden="true"><i /><i /><i /></span>
+            <span className="hud-wide-text">Sound {audible ? 'on' : 'off'}</span>
           </button>
           <button type="button" className="hud-btn" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls="map">
             {open ? 'Close' : 'Map'}<kbd>M</kbd>

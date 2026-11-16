@@ -1,18 +1,16 @@
 import { profile, skillTree } from '../data/portfolio';
-import Wanderer from './Wanderer';
 
 export default function Character() {
   return (
     <section id="character" data-region className="region">
       <span className="kanji" aria-hidden="true">人物</span>
-      <header className="region-head" data-reveal>
-        <p className="eyebrow">02 — Character sheet</p>
+      <header className="region-head" data-reveal data-slash>
+        <p className="eyebrow">Act II — The warrior</p>
         <h2 className="title-lg">Part adversary, <em>part architect</em></h2>
       </header>
 
       <div className="character">
         <aside className="sheet card" data-reveal>
-          <Wanderer />
           <dl className="facts">
             <div><dt>Class</dt><dd>{profile.role}</dd></div>
             <div><dt>Origin</dt><dd>{profile.location}</dd></div>

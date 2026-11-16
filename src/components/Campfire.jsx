@@ -10,8 +10,8 @@ export default function Campfire() {
 
   return (
     <section id="campfire" data-region className="region campfire">
-      <span className="kanji" aria-hidden="true">連絡</span>
-      <p className="eyebrow" data-reveal>05 — Campfire · {profile.available}</p>
+      <span className="kanji" aria-hidden="true">狼煙</span>
+      <p className="eyebrow" data-reveal>Finale — Signal fire · {profile.available}</p>
 
       <h2 className="verbs" aria-label="Let's probe, harden, ship — together." data-reveal>
         <span aria-hidden="true">let&rsquo;s</span>

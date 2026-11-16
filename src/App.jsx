@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { sound } from './world/audio';
 import WorldCanvas from './components/WorldCanvas';
 import Hud from './components/Hud';
 import Cursor from './components/Cursor';
@@ -13,7 +14,7 @@ function App() {
   // Reveal-on-scroll for anything marked data-reveal (a data attribute, so React re-renders never undo it).
   useEffect(() => {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.dataset.reveal = 'in'; io.unobserve(e.target); } }),
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.dataset.reveal = 'in'; if ('slash' in e.target.dataset) sound.slash(0.35); io.unobserve(e.target); } }),
       { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
     );
     document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
