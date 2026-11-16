@@ -93,8 +93,6 @@ const skyFrag = /* glsl */ `
   ${noiseGlsl}
   void main() {
     vec3 c = mix(vec3(0.075, 0.006, 0.012), vec3(0.004, 0.001, 0.003), smoothstep(0.2, 0.95, vUv.y));
-    vec2 g = floor(vUv * vec2(uAspect, 1.0) * 190.0);
-    c += step(0.9935, hash(g)) * smoothstep(0.4, 0.9, vUv.y) * (0.5 + 0.5 * sin(uTime * 2.0 + hash(g + 1.0) * 6.28)) * 0.5;
     vec2 p = vec2(vUv.x * uAspect * 1.6 + uTime * 0.008, vUv.y * 6.0);
     float n = vn(p) * 0.55 + vn(p * 2.1 + 7.0) * 0.3 + vn(p * 4.3 + 3.0) * 0.15;
     c = mix(c, vec3(0.035, 0.004, 0.008), smoothstep(0.5, 0.82, n) * smoothstep(0.3, 0.7, vUv.y) * 0.8);
