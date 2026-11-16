@@ -5,10 +5,10 @@ export const profile = {
   role: 'Security Engineer',
   tagline: 'Building at the intersection of offense and architecture.',
   intro:
-    'Security-focused engineer with a passion for kernel internals, offensive testing, and building detection systems — uncovering vulnerabilities before they become incidents.',
+    'Security-focused engineer with a passion for kernel internals, offensive testing, and building detection systems, uncovering vulnerabilities before they become incidents.',
   location: 'Tamil Nadu, India',
   email: 'rishikesh091105@gmail.com',
-  available: 'Open to internships & junior roles — 2025',
+  available: 'Open to internships & junior roles, 2025',
   social: [
     { label: 'GitHub', href: 'https://github.com/dynamo-pentester' },
     { label: 'LinkedIn', href: 'https://linkedin.com/in/rishikesh-r-196b5a290' },
@@ -72,7 +72,7 @@ export const projects = [
     title: 'SecureSplit',
     subtitle: 'Distributed Secure Media Storage',
     description:
-      'Implemented a two-share visual cryptography system — original images are XOR-split into a local encrypted noise share and a key noise share uploaded to IPFS (Pinata), ensuring neither share alone reveals any information about the original.',
+      'Implemented a two-share visual cryptography system: original images are XOR-split into a local encrypted noise share and a key noise share uploaded to IPFS (Pinata), ensuring neither share alone reveals any information about the original.',
     role: 'Security Engineer',
     year: '2024',
     tags: ['Python', 'FastAPI', 'IPFS', 'NumPy', 'Cryptography'],
@@ -100,9 +100,9 @@ export const projects = [
   {
     id: 'ale-logs',
     title: 'Log Analysis Platform',
-    subtitle: 'Switch Log & Telemetry Investigation — ALE Internship',
+    subtitle: 'Switch Log & Telemetry Investigation, ALE Internship',
     description:
-      'Built a FastAPI-based platform at Alcatel-Lucent Enterprise to ingest, parse, and visualize AOS switch and HMON datasets — automated extraction from nested TAR archives, regex parsing of multi-file logs into structured JSON, and Plotly dashboards for CPU, memory, and fan telemetry across 10K+ log entries.',
+      'Built a FastAPI-based platform at Alcatel-Lucent Enterprise to ingest, parse, and visualize AOS switch and HMON datasets: automated extraction from nested TAR archives, regex parsing of multi-file logs into structured JSON, and Plotly dashboards for CPU, memory, and fan telemetry across 10K+ log entries.',
     role: 'Software Development Intern',
     year: '2025',
     tags: ['Python', 'FastAPI', 'Regex', 'Plotly', 'JSON'],
@@ -120,7 +120,7 @@ export const highlights = [
   { id: 'skills', size: 'md', kicker: 'IndiaSkills Southern Regionals 2026', value: 'Medallion of Excellence', note: 'Cyber Security track.' },
   { id: 'ale', size: 'md', kicker: 'Alcatel-Lucent Enterprise', value: '10K+ log entries', note: 'Parsed and visualised by the log analysis platform built during the 2025 internship.' },
   { id: 'ctf', size: 'sm', kicker: 'Apoorv CTF 2026', value: '#44', note: 'Worldwide rank.' },
-  { id: 'edu', size: 'sm', kicker: 'B.E. CSE — Ramco Institute of Technology', value: '2027', note: 'Graduating class.' },
+  { id: 'edu', size: 'sm', kicker: 'B.E. CSE, Ramco Institute of Technology', value: '2027', note: 'Graduating class.' },
 ];
 
 // Published security research only. Reports still under coordinated disclosure are
@@ -179,8 +179,8 @@ export const campaigns = [
     id: 'cynox',
     title: 'Cynox Security LLP',
     short: 'Cynox Security',
-    role: 'Trainee — Cyber Security Analyst',
-    date: 'Aug 2026 — Present',
+    role: 'Trainee Cyber Security Analyst',
+    date: 'Aug 2026 to Present',
     points: [
       'CERT-In empanelled auditor. Joined as Cyber Security Analyst intern in August 2026, full-time trainee since November 2026.',
       'Vulnerability assessment and penetration testing of web applications.',
@@ -192,11 +192,11 @@ export const campaigns = [
     title: 'GirlScript Summer of Code',
     short: 'GSSoC',
     role: 'Open Source Developer',
-    date: 'May — Oct 2026',
+    date: 'May to Oct 2026',
     points: [
-      'GSSoC Champion ’26 — 10k points through merged pull requests.',
+      'GSSoC Champion ’26: 10k points through merged pull requests.',
       'Top 100 out of 51k participants.',
-      'Legendary Merge — 100 merged PRs across two real-time repositories.',
+      'Legendary Merge: 100 merged PRs across two real-time repositories.',
     ],
   },
   {
@@ -216,7 +216,7 @@ export const campaigns = [
     title: 'Ramco Institute of Technology',
     short: 'Ramco Institute',
     role: 'B.E. Computer Science and Engineering',
-    date: '2023 — 2027',
+    date: '2023 to 2027',
     points: ['Security research alongside the degree: kernel internals, detection engineering and coordinated vulnerability disclosure.'],
   },
 ];
@@ -224,7 +224,7 @@ export const campaigns = [
 export const testimonials = [
   {
     quote:
-      'Rishikesh approaches security with a rare depth — equal parts adversary mindset and careful architect. His kernel-level work on Sentinel-X reflects a maturity far beyond his years.',
+      'Rishikesh approaches security with a rare depth: equal parts adversary mindset and careful architect. His kernel-level work on Sentinel-X reflects a maturity far beyond his years.',
     name: 'Industry Mentor',
     title: 'Senior Security Engineer',
   },
@@ -236,7 +236,7 @@ export const testimonials = [
   },
   {
     quote:
-      'Top 5% globally on TryHackMe, Medallion of Excellence at IndiaSkills — the results speak for themselves. Calm, surgical, and relentlessly curious.',
+      'Top 5% globally on TryHackMe, Medallion of Excellence at IndiaSkills: the results speak for themselves. Calm, surgical, and relentlessly curious.',
     name: 'Competition Evaluator',
     title: 'IndiaSkills Cyber Security',
   },

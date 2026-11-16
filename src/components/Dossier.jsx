@@ -53,7 +53,7 @@ export default function Dossier({ id, eyebrow, title, kanji, items, onActive, ch
           ))}
         </div>
 
-        <nav className="dossier-index" ref={index} aria-label={`${title} — files`}>
+        <nav className="dossier-index" ref={index} aria-label={`${title}: files`}>
           <p className="mono"><span ref={count}>01</span> / {pad(items.length)}</p>
           {items.map((item, i) => (
             <button key={item.id} type="button" onClick={() => jump(i)}>{item.short || item.title || item.target}</button>

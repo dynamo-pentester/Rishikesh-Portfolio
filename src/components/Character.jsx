@@ -7,7 +7,7 @@ export default function Character() {
   const [open, setOpen] = useState(null);
   return (
     <div id="character" data-region>
-      <ActTitle eyebrow="Act I — The warrior" kanji="人物">Part adversary, <em>part architect</em></ActTitle>
+      <ActTitle eyebrow="Act I · The warrior" kanji="人物">Part adversary, <em>part architect</em></ActTitle>
       <section className="region region-body">
 
         <div className="character">
@@ -15,8 +15,8 @@ export default function Character() {
             <dl className="facts">
               <div><dt>Class</dt><dd>{profile.role}</dd></div>
               <div><dt>Origin</dt><dd>{profile.location}</dd></div>
-              <div><dt>Guild</dt><dd>Ramco Institute of Technology — B.E. CSE, 2023–2027</dd></div>
-              <div><dt>Current post</dt><dd>Cynox Security LLP — Trainee Cyber Security Analyst</dd></div>
+              <div><dt>Guild</dt><dd>Ramco Institute of Technology, B.E. CSE, 2023 to 2027</dd></div>
+              <div><dt>Current post</dt><dd>Cynox Security LLP, Trainee Cyber Security Analyst</dd></div>
               <div><dt>Status</dt><dd>{profile.available}</dd></div>
             </dl>
           </aside>

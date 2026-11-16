@@ -8,9 +8,9 @@ const notices = [...research, sealed];
 const plaques = ctfEvents.filter((e) => !/tryhackme/i.test(e.title));
 
 const HEADLINE = [
-  { value: 'Top 3%', label: 'TryHackMe — global ranking' },
-  { value: '#44', label: 'Apoorv CTF 2026 — worldwide' },
-  { value: 'Medallion', label: 'of Excellence — IndiaSkills Southern Regionals 2026' },
+  { value: 'Top 3%', label: 'TryHackMe, global ranking' },
+  { value: '#44', label: 'Apoorv CTF 2026, worldwide' },
+  { value: 'Medallion', label: 'of Excellence, IndiaSkills Southern Regionals 2026' },
 ];
 const initials = (s) => s.split(/[\s-]+/).filter((w) => /^[A-Z0-9]/.test(w)).slice(0, 2).map((w) => w[0]).join('');
 
@@ -19,7 +19,7 @@ const initials = (s) => s.split(/[\s-]+/).filter((w) => /^[A-Z0-9]/.test(w)).sli
 export default function Trophies() {
   return (
     <div id="trophies" data-region>
-      <ActTitle eyebrow="Act IV — War record" kanji="功績">Numbers, <em>not adjectives</em></ActTitle>
+      <ActTitle eyebrow="Act IV · War record" kanji="功績">Numbers, <em>not adjectives</em></ActTitle>
       <section className="region region-short region-body">
 
         <div className="banners" data-reveal>

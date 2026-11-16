@@ -12,7 +12,7 @@ export default function Disciplines() {
   const s = active === null ? null : services[active];
   return (
     <div id="disciplines" data-region>
-      <ActTitle eyebrow="Act III — The arsenal" kanji="技">Four ways <em>in</em></ActTitle>
+      <ActTitle eyebrow="Act III · The arsenal" kanji="技">Four ways <em>in</em></ActTitle>
       <section className="region region-body arsenal">
         <div className={`fan${open ? ' is-open' : ''}${s ? ' has-active' : ''}`} data-reveal role="tablist" aria-label="Disciplines">
           {services.map((x, i) => (

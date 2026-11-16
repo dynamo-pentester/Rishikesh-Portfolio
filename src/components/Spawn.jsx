@@ -7,17 +7,17 @@ function Scene({ live }) {
   return (
     <div className="hero-scene">
       <div className="hero-copy">
-        <p className="eyebrow">{profile.location} — field atlas</p>
+        <p className="eyebrow">{profile.location} · field atlas</p>
         <h1 className="title-xl"><em>Rishikesh</em> R</h1>
         <p className="lede">
-          {profile.role}. I work where offense meets architecture — kernel internals, offensive testing
+          {profile.role}. I work where offense meets architecture: kernel internals, offensive testing
           and the detection systems that catch what gets through.
         </p>
         <div className="cta-row">
           <a className="btn btn-solid" href="#character" tabIndex={live ? 0 : -1}>Enter the gate</a>
           <a className="btn" href="/Rishikesh-R.pdf" target="_blank" rel="noreferrer" tabIndex={live ? 0 : -1}>Résumé</a>
         </div>
-        <p className="hint"><span>Scroll — the blade does the rest</span><span className="hint-key">Turn sound on for the cut</span></p>
+        <p className="hint"><span>Scroll. The blade does the rest</span></p>
       </div>
     </div>
   );

@@ -11,9 +11,9 @@ export default function Campfire() {
   return (
     <section id="campfire" data-region className="region campfire">
       <span className="kanji" aria-hidden="true">狼煙</span>
-      <p className="eyebrow" data-reveal>Finale — The resting place · {profile.available}</p>
+      <p className="eyebrow" data-reveal>Finale · The resting place · {profile.available}</p>
 
-      <h2 className="verbs" aria-label="Let's probe, harden, ship — together." data-reveal>
+      <h2 className="verbs" aria-label="Let's probe, harden, ship, together." data-reveal>
         <span aria-hidden="true">let&rsquo;s</span>
         {['probe', 'harden', 'ship'].map((w) => <span key={w} aria-hidden="true">{w}</span>)}
         <em aria-hidden="true">together.</em>
@@ -31,8 +31,8 @@ export default function Campfire() {
       </div>
 
       <footer className="colophon">
-        <img src="/assets/signature.png" alt="Rishikesh R — signature" loading="lazy" />
-        <span>© {new Date().getFullYear()} Rishikesh R — terrain, grass, gate and sketches are generated in code.</span>
+        <img src="/assets/signature.png" alt="Rishikesh R signature" loading="lazy" />
+        <span>© {new Date().getFullYear()} Rishikesh R. Terrain, grass, gate and sketches are generated in code.</span>
         <a className="link" href="#spawn">Back to spawn</a>
       </footer>
       <p className="credits">

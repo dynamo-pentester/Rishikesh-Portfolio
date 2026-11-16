@@ -12,7 +12,7 @@ export default function QuestLog() {
   const focus = useCallback((item) => { store.focus = item.id; }, []);
   return (
     <div id="quests" data-region>
-      <ActTitle eyebrow="Act II — The scrolls" kanji="巻物">Selected <em>work</em></ActTitle>
+      <ActTitle eyebrow="Act II · The scrolls" kanji="巻物">Selected <em>work</em></ActTitle>
       <Dossier id="scrolls" eyebrow={`${projects.length} case files`} title={<>The <em>files</em></>} items={files} onActive={focus}>
         {(p, i) => (
           <>
