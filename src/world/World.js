@@ -300,7 +300,7 @@ export class World {
     this.groundMat = new THREE.MeshStandardMaterial({ color: 0x120c0b, roughness: 1, metalness: 0, roughnessMap: this.maps.wet, normalMap: this.maps.stoneNormal, normalScale: new THREE.Vector2(0.45, 0.45), envMapIntensity: 0.6 });
     this.scene.add(new THREE.Mesh(geo, this.groundMat));
 
-    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.09, metalness: 0.3, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.9, 0.9), envMapIntensity: 1.5 });
+    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.09, metalness: 0.3, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.5, 0.5), envMapIntensity: 0.75 });
     // two layers of ripples sliding across each other, so the surface reads as a current
     this.waterMat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = this.time.uTime;
@@ -367,15 +367,15 @@ export class World {
         const k = plume ? smooth(clamp((t - 0.45) / 0.2)) : t;
         for (const side of [-1, 1]) {
           pos.push(bx + cx * off - cz * ww * side, height * t, bz + cz * off + cx * ww * side);
-          if (plume) col.push(mix(0.2, 0.86, k) * tone, mix(0.12, 0.66, k) * tone, mix(0.1, 0.58, k) * tone);
-          else col.push(mix(0.035, 0.36, k) * tone, mix(0.02, 0.2, k) * tone, mix(0.02, 0.15, k) * tone);
+          if (plume) col.push(mix(0.1, 0.5, k) * tone, mix(0.06, 0.34, k) * tone, mix(0.05, 0.28, k) * tone);
+          else col.push(mix(0.02, 0.17, k) * tone, mix(0.012, 0.09, k) * tone, mix(0.012, 0.065, k) * tone);
           bend.push((height * t) / 2);
         }
         if (s < segs) { const a = base + s * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
       }
     };
-    for (let i = 0; i < 13; i++) { const a = r() * 6.283, d = Math.sqrt(r()) * 0.8; strip(Math.cos(a) * d, Math.sin(a) * d, 0.75 + r() * 0.75, 0.25 + r() * 0.5, r() * 6.283, 0.05 + r() * 0.035, false); }
-    for (let i = 0; i < 3; i++) { const a = r() * 6.283, d = r() * 0.5; strip(Math.cos(a) * d, Math.sin(a) * d, 1.55 + r() * 0.6, 0.2 + r() * 0.3, r() * 6.283, 0.1 + r() * 0.04, true); }
+    for (let i = 0; i < 20; i++) { const a = r() * 6.283, d = Math.sqrt(r()) * 0.85; strip(Math.cos(a) * d, Math.sin(a) * d, 0.8 + r() * 0.8, 0.25 + r() * 0.5, r() * 6.283, 0.022 + r() * 0.02, false); }
+    for (let i = 0; i < 3; i++) { const a = r() * 6.283, d = r() * 0.5; strip(Math.cos(a) * d, Math.sin(a) * d, 1.6 + r() * 0.6, 0.2 + r() * 0.3, r() * 6.283, 0.055 + r() * 0.03, true); }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
@@ -502,12 +502,12 @@ export class World {
     // Lanterns light the approach and the grave.
     loader.load('/models/lantern.glb', (gltf) => {
       if (this.disposed) return;
-      gltf.scene.traverse((o) => { if (o.isMesh && o.material.emissiveMap) { o.material.emissive.set(0xff7a2a); o.material.emissiveIntensity = 2.6; } });
+      gltf.scene.traverse((o) => { if (o.isMesh && o.material.emissiveMap) { o.material.emissive.set(0xff6a1e); o.material.emissiveIntensity = 0.75; } });
       for (const [x, z, lit] of [[-3.6, 90, 1], [3.6, 90, 0], [-3.6, 76, 0], [3.6, 76, 1], [-3.4, 47, 1], [3.4, 47, 0], [9.5, -60.5, 1]]) {
         const l = gltf.scene.clone(); l.position.set(x, heightAt(x, z) - 0.05, z); l.scale.setScalar(2.1); l.rotation.y = x * 0.4;
         this.scene.add(l);
         if (!lit && this.small) continue;
-        const light = new THREE.PointLight(0xff5a14, 20, 24, 1.9); light.position.set(x, l.position.y + 2.7, z);
+        const light = new THREE.PointLight(0xff5a14, 9, 20, 1.9); light.position.set(x, l.position.y + 2.7, z);
         this.scene.add(light); this.lanterns.push(light);
       }
     });
@@ -752,7 +752,7 @@ export class World {
 
     this.corona.quaternion.copy(this.camera.quaternion);
     this.petalMat.uniforms.uCam.value.copy(this.camera.position);
-    this.lanterns.forEach((l, n) => { l.intensity = 22 * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
+    this.lanterns.forEach((l, n) => { l.intensity = (n < 2 ? 22 : 9) * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
 
     const labels = [];
     for (const m of this.markers) {
