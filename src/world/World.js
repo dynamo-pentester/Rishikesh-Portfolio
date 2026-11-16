@@ -300,7 +300,7 @@ export class World {
     this.groundMat = new THREE.MeshStandardMaterial({ color: 0x120c0b, roughness: 1, metalness: 0, roughnessMap: this.maps.wet, normalMap: this.maps.stoneNormal, normalScale: new THREE.Vector2(0.45, 0.45), envMapIntensity: 0.6 });
     this.scene.add(new THREE.Mesh(geo, this.groundMat));
 
-    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.24, metalness: 0.2, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.5, 0.5), envMapIntensity: 0.75 });
+    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.5, metalness: 0, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.5, 0.5), envMapIntensity: 0.45 });
     // two layers of ripples sliding across each other, so the surface reads as a current
     this.waterMat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = this.time.uTime;
@@ -498,7 +498,7 @@ export class World {
       for (const name of ['LanternL', 'LanternR']) {
         const node = gate.getObjectByName(name);
         if (!node) continue;
-        const light = new THREE.PointLight(0xff5500, 26, 30, 1.8);
+        const light = new THREE.PointLight(0xff5500, 8, 22, 2);
         node.getWorldPosition(light.position);
         this.scene.add(light); this.lanterns.push(light);
       }
@@ -512,7 +512,7 @@ export class World {
         const l = gltf.scene.clone(); l.position.set(x, heightAt(x, z) - 0.05, z); l.scale.setScalar(2.1); l.rotation.y = x * 0.4;
         this.scene.add(l);
         if (!lit && this.small) continue;
-        const light = new THREE.PointLight(0xff5a14, 9, 20, 1.9); light.position.set(x, l.position.y + 2.7, z);
+        const light = new THREE.PointLight(0xff5a14, 6, 18, 2); light.position.set(x, l.position.y + 2.7, z);
         this.scene.add(light); this.lanterns.push(light);
       }
     });
@@ -585,9 +585,9 @@ export class World {
     const floor = new THREE.Mesh(new THREE.CircleGeometry(5, 48), floorMat);
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
     const tuftMat = this.grassMat(), r = seeded(12), tufts = new THREE.InstancedMesh(this.grassGeo, tuftMat, 150);
-    tuftMat.color.setScalar(0.32);
+    tuftMat.color.setScalar(0.2);
     for (let i = 0; i < 150; i++) {
-      const x = (r() - 0.5) * 9, z = 1.1 - r() * 5.2, front = z > -0.2, s = front ? 0.2 + r() * 0.14 : 0.42 + r() * 0.3;
+      const x = (r() - 0.5) * 9, z = 0.7 - r() * 4.8, front = z > -0.2, s = front ? 0.11 + r() * 0.06 : 0.2 + r() * 0.13;
       if (Math.hypot(x, z) < 0.6) { this.dummy.scale.setScalar(0); this.dummy.updateMatrix(); tufts.setMatrixAt(i, this.dummy.matrix); continue; }
       this.dummy.position.set(x, -0.03, z); this.dummy.rotation.set(0, 0, 0); this.dummy.scale.set(s * 1.4, s, s * 1.4);
       this.dummy.updateMatrix(); tufts.setMatrixAt(i, this.dummy.matrix);
@@ -766,7 +766,7 @@ export class World {
 
     this.corona.quaternion.copy(this.camera.quaternion);
     this.petalMat.uniforms.uCam.value.copy(this.camera.position);
-    this.lanterns.forEach((l, n) => { l.intensity = (n < 2 ? 22 : 9) * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
+    this.lanterns.forEach((l, n) => { l.intensity = (n < 2 ? 8 : 6) * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
 
     const labels = [];
     for (const m of this.markers) {
