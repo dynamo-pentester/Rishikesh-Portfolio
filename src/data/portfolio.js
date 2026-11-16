@@ -176,6 +176,30 @@ export const research = [
 // Service record — taken from the résumé.
 export const campaigns = [
   {
+    id: 'cynox',
+    title: 'Cynox Security LLP',
+    short: 'Cynox Security',
+    role: 'Trainee — Cyber Security Analyst',
+    date: 'Aug 2026 — Present',
+    points: [
+      'CERT-In empanelled auditor. Joined as Cyber Security Analyst intern in August 2026, full-time trainee since November 2026.',
+      'Vulnerability assessment and penetration testing of web applications.',
+      'Android application security testing.',
+    ],
+  },
+  {
+    id: 'gssoc',
+    title: 'GirlScript Summer of Code',
+    short: 'GSSoC',
+    role: 'Open Source Developer',
+    date: 'May — Oct 2026',
+    points: [
+      'GSSoC Champion ’26 — 10k points through merged pull requests.',
+      'Top 100 out of 51k participants.',
+      'Legendary Merge — 100 merged PRs across two real-time repositories.',
+    ],
+  },
+  {
     id: 'ale',
     title: 'Alcatel-Lucent Enterprise',
     short: 'Alcatel-Lucent',
@@ -242,6 +266,20 @@ export const navItems = [
 export const aboutImage = '/assets/me.jpg';
 
 export const certificates = [
+  {
+    id: 'cisco-jca',
+    title: 'Junior Cybersecurity Analyst Career Path',
+    issuer: 'Cisco Networking Academy',
+    date: '2026',
+    link: 'https://www.credly.com/badges/008db65c-5a3e-4e86-a0a1-026642c41378/linked_in_profile',
+  },
+  {
+    id: 'meity-ce',
+    title: 'Cybersecurity Essentials',
+    issuer: 'Ministry of Electronics and IT',
+    date: '2026',
+    link: 'https://fsp-assessment-certificates.s3.ap-southeast-1.amazonaws.com/%27/s3/buckets/fsp-assessment-certificates%27/RISHIKESH%2BR_54906.pdf',
+  },
   {
     id: 1,
     title: 'Software Engineering Professional Certificate',

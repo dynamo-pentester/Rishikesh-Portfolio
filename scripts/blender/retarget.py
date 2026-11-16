@@ -4,7 +4,7 @@ import bpy, math, json, os, glob, numpy as np
 from mathutils import Vector, Matrix, Quaternion
 
 W = '/home/claude/rig/work/'
-CLIPS = {'Idle': '2hand_Idle', 'Draw': 'Withdrawing_Sword', 'Slash': 'Stable_Sword_Inward_Slash', 'Sheathe': 'Sheathing_Sword', 'Run': 'Run_With_Sword'}
+CLIPS = {'Idle': '2hand_Idle', 'Draw': 'Withdrawing_Sword', 'Slash': 'Stable_Sword_Inward_Slash', 'Sheathe': 'Sheathing_Sword'}
 bpy.ops.wm.open_mainfile(filepath=W + 'sentinel_base.blend')
 scene = bpy.context.scene; scene.render.fps = 30
 body = bpy.data.objects['Sentinel']
@@ -135,6 +135,28 @@ for clip, fname in CLIPS.items():
     bpy.data.objects.remove(src)
     tr = rig.animation_data.nla_tracks.new(); tr.name = clip; tr.strips.new(clip, 0, act); rig.animation_data.action = None
     print(clip, meta[clip])
+
+# a plain upright stand, built by hand: legs and spine as modelled, arms lowered, left hand towards the hilt
+from math import radians
+from mathutils import Quaternion
+act = bpy.data.actions.new('Stand'); rig.animation_data.action = act
+bpy.context.view_layer.objects.active = rig; bpy.ops.object.mode_set(mode='POSE')
+def arm(side, sign, fore):
+    a = Quaternion((0, 1, 0), radians(74 * sign)); f = Quaternion((1, 0, 0), radians(fore)) @ a
+    return {side + 'Arm': a, side + 'ForeArm': f, side + 'Hand': f, side + 'Fingers': f}
+DS = {**arm('Left', 1, -40), **arm('Right', -1, -14)}
+for fr in (0, 30):
+    want = {}
+    for b in order:
+        D = DS.get(b, Quaternion())
+        want[b] = (D.to_matrix() @ rest[b], D)
+        par = J[b][2]
+        basis = (rest[b].inverted() @ want[b][0]) if par is None else ((want[par][0] @ rest[par].inverted() @ rest[b]).inverted() @ want[b][0])
+        pb[b].rotation_quaternion = basis.to_quaternion(); pb[b].keyframe_insert('rotation_quaternion', frame=fr)
+    pb['Hips'].location = (0, 0, 0); pb['Hips'].keyframe_insert('location', frame=fr)
+meta['Stand'] = {'frames': 2, 'duration': 1.0}
+bpy.ops.object.mode_set(mode='OBJECT')
+tr = rig.animation_data.nla_tracks.new(); tr.name = 'Stand'; tr.strips.new('Stand', 0, act); rig.animation_data.action = None
 
 scene.render.fps = 30
 

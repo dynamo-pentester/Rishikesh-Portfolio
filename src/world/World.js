@@ -27,7 +27,7 @@ const STOPS = [
   { p: [-4, 34], alt: 15, l: [2, -14], fog: 0.011 },              // the scrolls: over the shrine stones
   { p: [46, 6], alt: 11, l: [78, -52], fog: 0.012 },              // the arsenal
   { p: [80, -62], alt: 14, l: [34, -112], fog: 0.012 },           // war record
-  { p: [17.5, -52.5], alt: 3.6, l: [6, -64], ly: 2.2, fog: 0.013 }, // the resting place
+  { p: [13.5, -56.5], alt: 2.5, l: [6, -64], ly: 1.9, fog: 0.012 }, // the resting place
 ];
 const GRAB = 0.467, HOME = 1.133;   // seconds into the draw / sheathe clips where the hand meets the hilt
 
@@ -300,7 +300,7 @@ export class World {
     this.groundMat = new THREE.MeshStandardMaterial({ color: 0x120c0b, roughness: 1, metalness: 0, roughnessMap: this.maps.wet, normalMap: this.maps.stoneNormal, normalScale: new THREE.Vector2(0.45, 0.45), envMapIntensity: 0.6 });
     this.scene.add(new THREE.Mesh(geo, this.groundMat));
 
-    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.09, metalness: 0.3, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.5, 0.5), envMapIntensity: 0.75 });
+    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0a0204, roughness: 0.24, metalness: 0.2, normalMap: this.maps.ripple, normalScale: new THREE.Vector2(0.5, 0.5), envMapIntensity: 0.75 });
     // two layers of ripples sliding across each other, so the surface reads as a current
     this.waterMat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = this.time.uTime;
@@ -345,7 +345,7 @@ export class World {
     this.place(new THREE.InstancedMesh(rockGeo, rockMat, 70), 70, 31, 80, (d, x, y, z, r) => {
       if (y <= SEA + 0.1) return false;
       const s = 1.3 + r() * 2.6;
-      if (Math.abs(x) < 7 && z > 36) return false;
+      if ((Math.abs(x) < 7 && z > 36) || Math.hypot(x - 11, z + 59) < 13) return false;
       d.position.set(x, y - s * 0.12, z); d.rotation.set(r() * 6, r() * 6, r() * 6); d.scale.set(s, s * 0.7, s);
     });
 
@@ -367,7 +367,7 @@ export class World {
         const k = plume ? smooth(clamp((t - 0.45) / 0.2)) : t;
         for (const side of [-1, 1]) {
           pos.push(bx + cx * off - cz * ww * side, height * t, bz + cz * off + cx * ww * side);
-          if (plume) col.push(mix(0.1, 0.5, k) * tone, mix(0.06, 0.34, k) * tone, mix(0.05, 0.28, k) * tone);
+          if (plume) col.push(mix(0.08, 0.42, k) * tone, mix(0.05, 0.27, k) * tone, mix(0.04, 0.22, k) * tone);
           else col.push(mix(0.02, 0.17, k) * tone, mix(0.012, 0.09, k) * tone, mix(0.012, 0.065, k) * tone);
           bend.push((height * t) / 2);
         }
@@ -375,13 +375,15 @@ export class World {
       }
     };
     for (let i = 0; i < 20; i++) { const a = r() * 6.283, d = Math.sqrt(r()) * 0.85; strip(Math.cos(a) * d, Math.sin(a) * d, 0.8 + r() * 0.8, 0.25 + r() * 0.5, r() * 6.283, 0.022 + r() * 0.02, false); }
-    for (let i = 0; i < 3; i++) { const a = r() * 6.283, d = r() * 0.5; strip(Math.cos(a) * d, Math.sin(a) * d, 1.6 + r() * 0.6, 0.2 + r() * 0.3, r() * 6.283, 0.055 + r() * 0.03, true); }
+    for (let i = 0; i < 3; i++) { const a = r() * 6.283, d = r() * 0.5; strip(Math.cos(a) * d, Math.sin(a) * d, 1.6 + r() * 0.6, 0.2 + r() * 0.3, r() * 6.283, 0.03 + r() * 0.018, true); }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
     geo.setAttribute('aBend', new THREE.Float32BufferAttribute(bend, 1));
     geo.setAttribute('normal', new THREE.Float32BufferAttribute(new Float32Array(pos.length).map((_, i) => (i % 3 === 1 ? 1 : 0)), 3));
     geo.setIndex(idx);
+    this.grassGeo = geo;
+    this.grassMat = () => {
     const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
     mat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = this.time.uTime;
@@ -398,6 +400,9 @@ export class World {
           vec4 mvPosition = modelViewMatrix * gp;
           gl_Position = projectionMatrix * mvPosition;`);
     };
+    return mat;
+    };
+    const mat = this.grassMat();
     // the field: thick around every place the camera rests, with the approach to the gate kept clear as a path
     const fields = [[0, 74, 40, 0.24], [-14, 22, 46, 0.24], [2, -14, 40, 0.14], [62, -22, 44, 0.14], [56, -88, 44, 0.12], [8, -62, 30, 0.12]];
     const keep = Object.values(WAYPOINTS), count = this.small ? 4200 : 12000;
@@ -408,7 +413,7 @@ export class World {
       for (const c of fields) { if (pick < c[3]) { f = c; break; } pick -= c[3]; }
       const a = rr() * 6.2832, d = Math.sqrt(rr()) * f[2], x = f[0] + Math.cos(a) * d, z = f[1] + Math.sin(a) * d, y = heightAt(x, z);
       if (y <= SEA + 0.3 || (Math.abs(x) < 2.4 && z > 38) || keep.some(([kx, kz]) => Math.hypot(kx - x, kz - z) < 3.2)) continue;
-      if (Math.hypot(x - 12, z + 58) < 9) continue;                         // the clearing before the grave
+      if (Math.hypot(x - 10.5, z + 59.5) < 6.5) continue;                         // the clearing before the grave
       const s = 0.85 + rr() * 0.6;
       this.dummy.position.set(x, y - 0.06, z); this.dummy.rotation.set(0, 0, 0); this.dummy.scale.set(s * (0.8 + rr() * 0.6), s, s * (0.8 + rr() * 0.6));
       this.dummy.updateMatrix(); mesh.setMatrixAt(n++, this.dummy.matrix);
@@ -503,7 +508,7 @@ export class World {
     loader.load('/models/lantern.glb', (gltf) => {
       if (this.disposed) return;
       gltf.scene.traverse((o) => { if (o.isMesh && o.material.emissiveMap) { o.material.emissive.set(0xff6a1e); o.material.emissiveIntensity = 0.75; } });
-      for (const [x, z, lit] of [[-3.6, 90, 1], [3.6, 90, 0], [-3.6, 76, 0], [3.6, 76, 1], [-3.4, 47, 1], [3.4, 47, 0], [9.5, -60.5, 1]]) {
+      for (const [x, z, lit] of [[-3.6, 90, 1], [3.6, 90, 0], [-3.6, 76, 0], [3.6, 76, 1], [-3.4, 47, 1], [3.4, 47, 0], [1.6, -61.2, 1]]) {
         const l = gltf.scene.clone(); l.position.set(x, heightAt(x, z) - 0.05, z); l.scale.setScalar(2.1); l.rotation.y = x * 0.4;
         this.scene.add(l);
         if (!lit && this.small) continue;
@@ -517,8 +522,8 @@ export class World {
       if (this.disposed) return;
       const [x, z] = WAYPOINTS.campfire, rest = (this.rest = new THREE.Group());
       rest.position.set(x, heightAt(x, z) + 0.15, z); rest.rotation.y = Math.PI / 4;
-      gltf.scene.scale.setScalar(15); rest.add(gltf.scene);
-      const candle = new THREE.PointLight(0xff8a3c, 16, 16, 1.8); candle.position.set(0.4, 1.6, 2.2); rest.add(candle);
+      gltf.scene.scale.setScalar(20); rest.add(gltf.scene);
+      const candle = new THREE.PointLight(0xff8a3c, 16, 16, 1.8); candle.position.set(0.2, 1.3, 2.6); rest.add(candle);
       this.scene.add(rest); rest.updateMatrixWorld(true);
       this.restGround = (lx, lz) => {
         const from = rest.localToWorld(new THREE.Vector3(lx, 30, lz));
@@ -541,7 +546,7 @@ export class World {
         const a = anchors[Math.floor(r() * anchors.length)], ang = r() * 6.2832, d = 9 + r() * 50;
         const x = a[0] + Math.cos(ang) * d, z = a[1] + Math.sin(ang) * d, y = heightAt(x, z);
         if (y <= SEA + 0.6 || flight.some(([fx, fz]) => Math.hypot(fx - x, fz - z) < 22)) continue;
-        if (Math.hypot(x - WAYPOINTS.spawn[0], z - WAYPOINTS.spawn[1]) < 13) continue;
+        if (Math.hypot(x - WAYPOINTS.spawn[0], z - WAYPOINTS.spawn[1]) < 13 || Math.hypot(x - 12, z + 58) < 17 || Math.hypot(x - 5, z - 50) < 12) continue;
         spots.push({ x, y, z, rot: r() * 6.28, s: 1.5 + r() * 0.9, v: r() < 0.5 ? 'TreeA' : 'TreeB' });
       }
       for (const v of ['TreeA', 'TreeB']) {
@@ -571,19 +576,27 @@ export class World {
     const fill = new THREE.DirectionalLight(0x8494c4, 0.22); fill.position.set(-1.6, 1.8, 5);
     this.glint = new THREE.PointLight(0xffe2d2, 1.4, 5, 2);
     scene.add(key, rim, fill, this.glint);
-    // a patch of the same wet stone under his feet, fading out at the edge, to catch his shadow
+    // he stands in the same grass as the field: dark earth that fades out at the edge, and tufts moving in the same wind
     const fade = document.createElement('canvas'); fade.width = fade.height = 128;
-    const fc = fade.getContext('2d'), grad = fc.createRadialGradient(64, 64, 8, 64, 64, 64);
-    grad.addColorStop(0, '#fff'); grad.addColorStop(0.55, '#fff'); grad.addColorStop(1, '#000');
+    const fc = fade.getContext('2d'), grad = fc.createRadialGradient(64, 64, 6, 64, 64, 64);
+    grad.addColorStop(0, '#fff'); grad.addColorStop(0.45, '#fff'); grad.addColorStop(1, '#000');
     fc.fillStyle = grad; fc.fillRect(0, 0, 128, 128);
-    const floorMat = this.groundMat.clone(); floorMat.alphaMap = new THREE.CanvasTexture(fade); floorMat.transparent = true;
-    floorMat.roughnessMap = this.maps.wet.clone(); floorMat.roughnessMap.repeat.set(0.6, 0.6);
-    floorMat.normalMap = this.maps.stoneNormal.clone(); floorMat.normalMap.repeat.set(4, 4);
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(4.2, 48), floorMat);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0c0706, roughness: 1, metalness: 0, alphaMap: new THREE.CanvasTexture(fade), transparent: true });
+    const floor = new THREE.Mesh(new THREE.CircleGeometry(5, 48), floorMat);
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
-    scene.add(floor);
+    const tuftMat = this.grassMat(), r = seeded(12), tufts = new THREE.InstancedMesh(this.grassGeo, tuftMat, 150);
+    tuftMat.color.setScalar(0.32);
+    for (let i = 0; i < 150; i++) {
+      const x = (r() - 0.5) * 9, z = 1.1 - r() * 5.2, front = z > -0.2, s = front ? 0.2 + r() * 0.14 : 0.42 + r() * 0.3;
+      if (Math.hypot(x, z) < 0.6) { this.dummy.scale.setScalar(0); this.dummy.updateMatrix(); tufts.setMatrixAt(i, this.dummy.matrix); continue; }
+      this.dummy.position.set(x, -0.03, z); this.dummy.rotation.set(0, 0, 0); this.dummy.scale.set(s * 1.4, s, s * 1.4);
+      this.dummy.updateMatrix(); tufts.setMatrixAt(i, this.dummy.matrix);
+    }
+    tufts.frustumCulled = false;
+    scene.add(floor, tufts);
+    this.heroFloor = [floorMat, tuftMat];
     this.heroCam = new THREE.PerspectiveCamera(26, 1, 0.1, 60);
-    this.hero = { model: null, mats: [floorMat], alpha: 1, draw: 0, idle: 0, slash: 0, sheathe: 0, struck: false };
+    this.hero = { model: null, mats: [floorMat, tuftMat], alpha: 1, draw: 0, idle: 0, slash: 0, sheathe: 0, struck: false };
   }
 
   // His katana planted in the earth and his helmet set down beside it.
@@ -591,10 +604,10 @@ export class World {
     if (!this.rest || !this.kabuto || !this.hero.model || this.dressed) return;
     this.dressed = true;
     const src = this.hero.model.getObjectByName('KatanaHand'), blade = src.clone();
-    src.getWorldScale(blade.scale); blade.visible = true;
+    src.getWorldScale(blade.scale); blade.scale.multiplyScalar(1.25); blade.visible = true;
     blade.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.opacity = 1; o.material.transparent = false; } });
-    blade.position.set(0.95, this.restGround(0.95, 2.3) + 0.7, 2.3); blade.rotation.set(-Math.PI / 2 + 0.1, 0, 0.14);
-    this.kabuto.position.set(0.15, this.restGround(0.15, 2.6) + 0.02, 2.6); this.kabuto.rotation.set(-0.12, 0.5, 0.05); this.kabuto.scale.setScalar(1.25);
+    blade.position.set(1.0, this.restGround(1.0, 1.5) + 0.85, 1.5); blade.rotation.set(-Math.PI / 2 + 0.1, 0, 0.14);
+    this.kabuto.position.set(-0.85, this.restGround(-0.85, 1.45) + 0.03, 1.45); this.kabuto.rotation.set(-0.1, 0.35, 0.04); this.kabuto.scale.setScalar(1.6);
     this.rest.add(blade, this.kabuto);
   }
 
@@ -610,7 +623,7 @@ export class World {
       h.mixer = new THREE.AnimationMixer(model);
       h.act = {};
       for (const clip of gltf.animations) { const a = h.mixer.clipAction(clip); a.play(); a.setEffectiveWeight(0); h.act[clip.name] = a; }
-      h.w = { Draw: 1, Idle: 0, Slash: 0, Sheathe: 0 };
+      h.w = { Stand: 1, Draw: 0, Idle: 0, Slash: 0, Sheathe: 0 };
       h.inHand = model.getObjectByName('KatanaHand'); h.atHip = model.getObjectByName('KatanaSheathed');
       h.model = model;
       this.heroScene.add(model);
@@ -683,18 +696,18 @@ export class World {
   // He returns once, before the last act, to put the sword away.
   updateGuardian(t, dt, p) {
     const h = this.hero, hp = store.hero.p, q = store.hero.q;
-    const ending = smooth(clamp((p - 4.36) / 0.06)) * (1 - smooth(clamp((p - 4.62) / 0.08)));
+    const ending = smooth(clamp((p - 4.34) / 0.06)) * (1 - smooth(clamp((p - 4.66) / 0.08)));
     const alpha = p < 2 ? 1 - smooth(clamp(q * 1.5)) : ending;
     this.heroPass.enabled = !!h.model && alpha > 0.01;
     if (!this.heroPass.enabled) return;
     const ease = (rate) => (this.reduced ? 1 : 1 - Math.exp(-dt * rate));
     let want = 'Draw', hand = false;
     if (p >= 2) {
-      want = 'Sheathe';
-      h.sheathe += (clamp((p - 4.4) / 0.2) * h.act.Sheathe.getClip().duration - h.sheathe) * ease(5);
+      want = p > 4.585 ? 'Stand' : 'Sheathe';                                // sword home, he straightens up
+      h.sheathe += (clamp((p - 4.4) / 0.17) * h.act.Sheathe.getClip().duration - h.sheathe) * ease(5);
       hand = h.sheathe < HOME; h.struck = false; h.slash = 0;
     } else {
-      h.draw += (clamp((hp - 0.05) / 0.27) * h.act.Draw.getClip().duration - h.draw) * ease(7);
+      h.draw += (clamp((hp - 0.06) / 0.26) * h.act.Draw.getClip().duration - h.draw) * ease(7);
       const strike = hp > 0.4;
       if (strike && !h.striking && !h.struck) { h.striking = true; h.slash = 0.42; }
       if (!strike && hp < 0.34) { h.striking = false; h.slash = 0; if (h.struck) { h.struck = false; store.hero.onCut?.(false); } }
@@ -703,16 +716,17 @@ export class World {
         h.slash = Math.min(h.slash + dt * 1.25, h.act.Slash.getClip().duration - 0.02);
         if (!h.struck && h.slash > 1.05) { h.struck = true; h.striking = false; store.hero.onCut?.(true); }
       } else if (hp > 0.33) want = 'Idle';
-      hand = want !== 'Draw' || h.draw > GRAB;
+      else if (hp < 0.045) want = 'Stand';                                  // at rest he simply stands, a hand near the hilt
+      hand = want === 'Idle' || want === 'Slash' || (want === 'Draw' && h.draw > GRAB);
     }
     h.idle = (h.idle + dt) % h.act.Idle.getClip().duration;
-    const times = { Draw: h.draw, Idle: h.idle, Slash: h.slash, Sheathe: h.sheathe };
+    const times = { Stand: 0, Draw: h.draw, Idle: h.idle, Slash: h.slash, Sheathe: h.sheathe };
     let total = 0;
-    for (const k in h.w) { h.w[k] += ((k === want ? 1 : 0) - h.w[k]) * ease(k === 'Slash' || want === 'Slash' ? 16 : 6); total += h.w[k]; }
+    for (const k in h.w) { h.w[k] += ((k === want ? 1 : 0) - h.w[k]) * ease(k === 'Slash' || want === 'Slash' ? 16 : 5); total += h.w[k]; }
     for (const k in h.w) { h.act[k].time = times[k]; h.act[k].setEffectiveWeight(h.w[k] / total); }
     h.mixer.update(0);
     h.inHand.visible = hand; h.atHip.visible = !hand;
-    if (alpha !== h.alpha) { h.alpha = alpha; h.mats.forEach((m) => { m.transparent = m.alphaMap ? true : alpha < 1; m.opacity = alpha; }); }
+    if (alpha !== h.alpha) { h.alpha = alpha; h.mats.forEach((m) => { m.transparent = m.alphaMap ? true : alpha < 0.999; m.opacity = alpha; }); }
     h.model.rotation.y = -0.22 + (this.reduced ? 0 : Math.sin(t * 0.7) * 0.02) + store.pointer.x * 0.08;
     this.glint.position.set(Math.sin(t * 0.55) * 2.2 - 0.4, 2.2 + Math.cos(t * 0.4) * 0.5, 1.6);   // a slow travelling highlight on the steel
     const wide = innerWidth > 900;

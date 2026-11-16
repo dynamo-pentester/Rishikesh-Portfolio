@@ -463,8 +463,9 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 .emaki-panel h3 { font-family: var(--serif); font-variation-settings: 'opsz' 144; font-weight: 300; font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.02; letter-spacing: -0.035em; margin: 0.5rem 0 1rem; }
 .emaki-mark { position: absolute; right: clamp(0.9rem, 2vw, 1.6rem); top: clamp(1.1rem, 2.4vw, 2rem); font-family: var(--brush); font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1; color: #a3101f; }
 @media (min-width: 900px) {
-  .emaki-paper { grid-auto-flow: column; grid-auto-columns: 1fr; }
-  .emaki-panel + .emaki-panel { border-top: 0; border-left: 1px solid var(--washi-line); }
+  .emaki-paper { grid-template-columns: 1fr 1fr; }
+  .emaki-panel:nth-child(2) { border-top: 0; }
+  .emaki-panel:nth-child(even) { border-left: 1px solid var(--washi-line); }
 }
 
 /* published research: papers nailed to a wooden notice board */
@@ -506,3 +507,14 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
 [data-reveal='in'] .stamp { scale: 1; opacity: 1; }
 @media (hover: hover) { .seals a:hover strong { color: var(--mark); } .seals a:hover .stamp { background: var(--mark); color: var(--paper); } }
 @media (prefers-reduced-motion: reduce) { .stamp, .notice { transition: none; scale: 1; opacity: 1; translate: 0 0; } .emaki-paper { transition: none; } }
+
+/* the finale fits one screen: the grave stays in view beside it */
+.campfire { min-height: 100svh; padding-top: clamp(5.5rem, 12vh, 7.5rem); padding-bottom: clamp(3.5rem, 8vh, 5rem); }
+.campfire .verbs { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0 0.28em; max-width: 12ch; margin: 1rem 0 clamp(1.25rem, 3vh, 2rem); font-size: clamp(2.6rem, min(7.2vw, 11svh), 6rem); line-height: 0.98; }
+.campfire .verbs span:first-child { flex-basis: 100%; margin-bottom: 0.1em; }
+.campfire .contact { max-width: 620px; gap: 1rem; padding: clamp(1rem, 2vw, 1.5rem); }
+.campfire .contact-mail { font-size: clamp(1.1rem, 2.2vw, 1.6rem); }
+.campfire .contact-links { padding-top: 0.9rem; }
+.campfire .colophon { margin-top: clamp(1.25rem, 3vh, 2rem); max-width: 620px; }
+.campfire .colophon img { width: 110px; }
+.campfire .credits { margin-top: 0.8rem; max-width: 620px; }

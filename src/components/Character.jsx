@@ -17,7 +17,7 @@ export default function Character() {
               <div><dt>Class</dt><dd>{profile.role}</dd></div>
               <div><dt>Origin</dt><dd>{profile.location}</dd></div>
               <div><dt>Guild</dt><dd>Ramco Institute of Technology — B.E. CSE, 2023–2027</dd></div>
-              <div><dt>Last campaign</dt><dd>Alcatel-Lucent Enterprise — Software Development Intern, 2025</dd></div>
+              <div><dt>Current post</dt><dd>Cynox Security LLP — Trainee Cyber Security Analyst</dd></div>
               <div><dt>Status</dt><dd>{profile.available}</dd></div>
             </dl>
           </aside>
