@@ -8,7 +8,7 @@ export const profile = {
     'Security-focused engineer with a passion for kernel internals, offensive testing, and building detection systems, uncovering vulnerabilities before they become incidents.',
   location: 'Tamil Nadu, India',
   email: 'rishikesh091105@gmail.com',
-  available: 'Open to internships & junior roles, 2025',
+  available: 'Full-time at Cynox Security · open to conversations',
   social: [
     { label: 'GitHub', href: 'https://github.com/dynamo-pentester' },
     { label: 'LinkedIn', href: 'https://linkedin.com/in/rishikesh-r-196b5a290' },

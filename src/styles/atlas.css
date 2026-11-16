@@ -700,3 +700,16 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
   .campfire .verbs { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: 0; margin: 1.1rem 0 1.6rem; font-size: clamp(3rem, 15vw, 4.6rem); line-height: 0.92; }
   .campfire .verbs span:first-child { flex-basis: auto; font-size: 0.36em; margin-bottom: 0.35em; }
 }
+
+/* case files: the description never cuts a line in half. It takes the room that is left and scrolls inside the card if it is longer */
+.sheet-file .sheet-desc {
+  display: block; -webkit-line-clamp: unset; line-clamp: unset; flex: 1 1 auto; min-height: 3.2em; overflow-y: auto; overscroll-behavior: auto; padding-right: 0.5rem;
+  scrollbar-width: thin; scrollbar-color: rgb(163 16 31 / 0.6) transparent;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 1.4em), transparent); mask-image: linear-gradient(#000 calc(100% - 1.4em), transparent); padding-bottom: 1.2em;
+}
+.sheet-file .sheet-desc::-webkit-scrollbar { width: 4px; }
+.sheet-file .sheet-desc::-webkit-scrollbar-thumb { background: rgb(163 16 31 / 0.6); border-radius: 2px; }
+.sheet-file .sheet-sketch { flex: 0 1 22%; }
+.sheet-file .tags, .sheet-file .link, .sheet-file h3, .sheet-file .sheet-sub, .sheet-file .sheet-meta { flex-shrink: 0; }
+.sheet-file .link { margin-top: 0; }
+@media (min-width: 900px) { .deck { max-height: 660px; } }
