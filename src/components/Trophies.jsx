@@ -11,7 +11,7 @@ const HEADLINE = [
 ];
 const initials = (s) => s.split(/[\s-]+/).filter((w) => /^[A-Z0-9]/.test(w)).slice(0, 2).map((w) => w[0]).join('');
 
-// Act IV: three kinds of record, three forms. Rankings are numbers and plain rows, published research is pinned
+// Act IV: three kinds of record, three forms. Rankings fly as war banners, every contest is a wooden votive plaque hung on the shrine rack, published research is pinned
 // to a notice board the way edicts were, and every licence is a red seal.
 export default function Trophies() {
   return (
@@ -19,24 +19,31 @@ export default function Trophies() {
       <ActTitle eyebrow="Act IV — War record" kanji="功績">Numbers, <em>not adjectives</em></ActTitle>
       <section className="region region-short region-body">
 
-        <div className="sheet headline" data-reveal>
-          {HEADLINE.map((h) => (
-            <div key={h.value}><strong>{h.value}</strong><span>{h.label}</span></div>
+        <div className="banners" data-reveal>
+          {HEADLINE.map((h, i) => (
+            <div key={h.value} className="nobori" style={{ '--d': `${i * -1.3}s` }}>
+              <i className="nobori-mon" aria-hidden="true">{['壱', '弐', '参'][i]}</i>
+              <strong>{h.value}</strong>
+              <span>{h.label}</span>
+            </div>
           ))}
         </div>
 
-        <div className="sheet ledger" data-reveal>
+        <header className="sub-head ema-head" data-reveal>
           <p className="eyebrow">Trials by fire · 武勲</p>
-          <ul className="rows">
-            {ctfEvents.map((e) => (
-              <li key={e.id}>
-                <span className="rows-main">{e.title}<small>{e.type}</small></span>
-                <span className="rows-place">{e.placement}</span>
-                <span className="rows-year">{e.date}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <h2 className="title-md">Hung at the <em>shrine</em></h2>
+        </header>
+        <ul className="ema-rack">
+          {ctfEvents.map((e, i) => (
+            <li key={e.id} data-reveal style={{ '--d': `${(i % 4) * 80}ms`, '--tilt': `${[-1.4, 0.9, -0.6, 1.5, -1, 0.5][i % 6]}deg` }}>
+              <article className="ema">
+                <p className="ema-meta">{e.type} · {e.date}</p>
+                <h3>{e.title}</h3>
+                <p className="ema-place">{e.placement}</p>
+              </article>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="region region-short" id="reports">
