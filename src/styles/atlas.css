@@ -689,3 +689,14 @@ html:not(.has-world) .hud-labels, html:not(.has-world) .hud-bottom > span { visi
   .sheet-sketch { flex-basis: 20%; }
 }
 @media (max-width: 899px) { .sheet-desc { -webkit-line-clamp: 8; line-clamp: 8; } }
+
+/* phones, finale: the words stand in one column with the kanji beside them, on a dark fade so the scene does not fight them */
+@media (max-width: 899px) {
+  .campfire { position: relative; isolation: isolate; }
+  .campfire::before { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: 40svh; bottom: 0; pointer-events: none;
+    background: linear-gradient(transparent, color-mix(in srgb, var(--paper) 90%, transparent) 16svh); }
+  .campfire .kanji { top: calc(52svh - 0.2rem); bottom: auto; right: var(--gutter); font-size: clamp(2.6rem, 12vw, 3.6rem); line-height: 1.02; text-shadow: 0 0 18px var(--paper), 0 0 4px var(--paper); }
+  .campfire > .eyebrow { max-width: 24ch; }
+  .campfire .verbs { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: 0; margin: 1.1rem 0 1.6rem; font-size: clamp(3rem, 15vw, 4.6rem); line-height: 0.92; }
+  .campfire .verbs span:first-child { flex-basis: auto; font-size: 0.36em; margin-bottom: 0.35em; }
+}
