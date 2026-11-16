@@ -352,15 +352,6 @@ export const certificates = [
     description: 'Professional penetration testing workflows, reporting, and remediation strategies.',
     link: 'https://www.linkedin.com/learning/certificates/738417bdb06577da09b3edbe9d90d07a86f173244970cd954f98b9dfd99433cc',
   },
-  {
-    id: 9,
-    title: 'Pre-Security Pathway',
-    issuer: 'TryHackMe',
-    date: '2025',
-    credential: 'THM-PS',
-    description: 'Training covering fundamental security concepts, network basics, and hands-on labs.',
-    link: 'https://tryhackme-certificates.s3-eu-west-1.amazonaws.com/THM-JTL8EBLS6U.pdf',
-  },
 ];
 
 export const ctfEvents = [

@@ -494,6 +494,7 @@ export class World {
       if (this.disposed) return;
       const gate = gltf.scene, [x, z] = WAYPOINTS.spawn;
       gate.position.set(x, heightAt(x, z) - 0.2, z); gate.scale.setScalar(1.25);
+      gate.traverse((o) => { if (o.isMesh && o.material.name === 'Brass') { o.material.color.set(0x3a2317); o.material.metalness = 0.1; o.material.roughness = 0.8; } });
       this.scene.add(gate); gate.updateMatrixWorld(true);
       for (const name of ['LanternL', 'LanternR']) {
         const node = gate.getObjectByName(name);
@@ -525,6 +526,13 @@ export class World {
       gltf.scene.scale.setScalar(20); rest.add(gltf.scene);
       const candle = new THREE.PointLight(0xff8a3c, 16, 16, 1.8); candle.position.set(0.2, 1.3, 2.6); rest.add(candle);
       this.scene.add(rest); rest.updateMatrixWorld(true);
+      // the loose blossoms around the tree keep falling
+      this.blossoms = [];
+      gltf.scene.traverse((o) => {
+        if (!o.name.startsWith('Blossom_Petal')) return;
+        const q = o.parent.getWorldQuaternion(new THREE.Quaternion()).invert(), sc = o.parent.getWorldScale(new THREE.Vector3()).x;
+        this.blossoms.push({ o, base: o.position.clone(), q, sc, ph: this.blossoms.length * 1.618 });
+      });
       this.restGround = (lx, lz) => {
         const from = rest.localToWorld(new THREE.Vector3(lx, 30, lz));
         const hit = new THREE.Raycaster(from, new THREE.Vector3(0, -1, 0)).intersectObject(gltf.scene, true)[0];
@@ -607,7 +615,7 @@ export class World {
     src.getWorldScale(blade.scale); blade.scale.multiplyScalar(1.25); blade.visible = true;
     blade.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.opacity = 1; o.material.transparent = false; } });
     blade.position.set(1.0, this.restGround(1.0, 1.5) + 0.85, 1.5); blade.rotation.set(-Math.PI / 2 + 0.1, 0, 0.14);
-    this.kabuto.position.set(-0.85, this.restGround(-0.85, 1.45) + 0.03, 1.45); this.kabuto.rotation.set(-0.1, 0.35, 0.04); this.kabuto.scale.setScalar(1.6);
+    this.kabuto.position.set(-0.85, this.restGround(-0.85, 1.45) + 0.16, 1.45); this.kabuto.rotation.set(-0.1, 0.35, 0.04); this.kabuto.scale.setScalar(1.6);
     this.rest.add(blade, this.kabuto);
   }
 
@@ -743,18 +751,18 @@ export class World {
 
     const p = this.progress();
     const i = Math.min(Math.floor(p), STOPS.length - 2);
-    const f = smooth(clamp((p - i - 0.36) / 0.28));   // hold through the act, travel only in the gap between acts
+    const f = smooth(clamp((p - i - 0.16) / 0.28));   // hold through the act, travel only in the gap between acts
     const a = STOPS[i], b = STOPS[i + 1];
-    const px = mix(a.p[0], b.p[0], f), pz = mix(a.p[1], b.p[1], f);
+    let px = mix(a.p[0], b.p[0], f), pz = mix(a.p[1], b.p[1], f), alt = mix(a.alt, b.alt, f), ly = mix(a.ly ?? 3, b.ly ?? 3, f);
     let lx = mix(a.l[0], b.l[0], f), lz = mix(a.l[1], b.l[1], f);
     const fw = store.focus && WAYPOINTS[store.focus];
-    if (fw && p > 1.6 && p < 2.6) { lx = mix(lx, fw[0], 0.7); lz = mix(lz, fw[1], 0.7); }
+    if (fw && p > 1.55 && p < 2.42) { lx = fw[0]; lz = fw[1]; px = fw[0] + 2.5; pz = fw[1] + 10.5; alt = 3.6; ly = 3.2; }   // walk up to the stone whose file is open
     lx += store.pointer.x * 1.2;
 
     const k = this.first || this.reduced ? 1 : 1 - Math.exp(-dt * 1.7);
     this.first = false;
-    this.cam.pos.lerp(this.tmp.set(px, Math.max(heightAt(px, pz), 0) + mix(a.alt, b.alt, f), pz), k);
-    this.cam.look.lerp(this.tmp.set(lx, heightAt(lx, lz) + mix(a.ly ?? 3, b.ly ?? 3, f), lz), k);
+    this.cam.pos.lerp(this.tmp.set(px, Math.max(heightAt(px, pz), 0) + alt, pz), k);
+    this.cam.look.lerp(this.tmp.set(lx, heightAt(lx, lz) + ly, lz), k);
     this.scene.fog.density = mix(this.scene.fog.density, mix(a.fog, b.fog, f), k);
     this.camera.position.copy(this.cam.pos).setY(this.cam.pos.y + (this.reduced ? 0 : Math.sin(t * 0.45) * 0.08));
     this.camera.lookAt(this.cam.look);
@@ -767,6 +775,13 @@ export class World {
     this.corona.quaternion.copy(this.camera.quaternion);
     this.petalMat.uniforms.uCam.value.copy(this.camera.position);
     this.lanterns.forEach((l, n) => { l.intensity = (n < 2 ? 8 : 6) * (0.82 + 0.12 * Math.sin(t * 9 + n * 2.1) + 0.06 * Math.sin(t * 23 + n)); });
+
+    if (this.blossoms && p > 4.2) for (const b of this.blossoms) {
+      const fall = ((t * 0.32 + b.ph) % 3) - 1.5;
+      this.tmp.set(Math.sin(t * 0.7 + b.ph) * 0.35 - fall * 0.25, -fall, Math.cos(t * 0.5 + b.ph * 2) * 0.3).applyQuaternion(b.q).divideScalar(b.sc);
+      b.o.position.copy(b.base).add(this.tmp);
+      b.o.rotation.x = t * 0.9 + b.ph; b.o.rotation.z = t * 0.6 + b.ph;
+    }
 
     const labels = [];
     for (const m of this.markers) {
