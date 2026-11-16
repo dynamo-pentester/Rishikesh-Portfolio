@@ -4,6 +4,7 @@
    ===================================================================== */
 :root {
   --paper: #efe9dc; --ink: #16150f; --accent: #e8839f; --sun: #d8412a; --mark: #d8412a;
+  --sky-top: #9fd3f2; --sky-low: #fde9e1; --cloud: #ffffff; --land-lo: #a9d389; --land-hi: #e3ecbd; --sand: #f3e6c4; --water: #8fcbe8; --bark: #5b4038;
   --ink-rgb: 22 21 15;
   --muted: rgb(var(--ink-rgb) / 0.62);
   --faint: rgb(var(--ink-rgb) / 0.38);
@@ -19,6 +20,7 @@
 }
 :root[data-theme='night'] {
   --paper: #0e1126; --ink: #e8e3d6; --accent: #ff9cba; --sun: #efe8d6; --mark: #ff9cba;
+  --sky-top: #070b24; --sky-low: #2b2756; --cloud: #3c3a6e; --land-lo: #1f4b4a; --land-hi: #3a6a5c; --sand: #4a5a78; --water: #2450a0; --bark: #d9c9c4;
   --ink-rgb: 232 227 214;
   color-scheme: dark;
 }
@@ -55,9 +57,9 @@ kbd { font-family: var(--mono); font-size: 0.85em; padding: 0.1em 0.45em; border
 }
 /* A paper veil keeps text readable: heavier where the text sits, clear where the world shows. */
 .veil { position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 38%, transparent), color-mix(in srgb, var(--paper) 76%, transparent) 55%); }
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 22%, transparent), color-mix(in srgb, var(--paper) 70%, transparent) 55%); }
 @media (min-width: 900px) {
-  .veil { background: linear-gradient(90deg, color-mix(in srgb, var(--paper) 90%, transparent) 0%, color-mix(in srgb, var(--paper) 74%, transparent) 42%, color-mix(in srgb, var(--paper) 8%, transparent) 82%); }
+  .veil { background: linear-gradient(90deg, color-mix(in srgb, var(--paper) 84%, transparent) 0%, color-mix(in srgb, var(--paper) 62%, transparent) 40%, transparent 78%); }
 }
 html:not(.has-world) .veil { display: none; }
 main { position: relative; z-index: 2; }
@@ -175,8 +177,13 @@ main { position: relative; z-index: 2; }
 .character { display: grid; gap: clamp(2rem, 5vw, 4.5rem); }
 @media (min-width: 900px) { .character { grid-template-columns: minmax(280px, 380px) 1fr; align-items: start; } }
 .card { padding: clamp(0.9rem, 1.4vw, 1.25rem); }
-.portrait { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 14px; filter: grayscale(1) contrast(1.05); }
-.facts { margin-top: 1rem; }
+/* The portrait stands in the scene: a cut-out figure in front of the rising sun. */
+.figure { position: relative; aspect-ratio: 1 / 1; margin: 0 0 -1px; border-radius: 14px 14px 0 0; overflow: hidden; }
+.figure::before { content: ''; position: absolute; left: 50%; top: 6%; width: 78%; aspect-ratio: 1; translate: -50% 0; border-radius: 50%; background: var(--mark); }
+.figure::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: var(--line); }
+.portrait { position: relative; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.facts { margin-top: 0; }
+.facts div:first-child { border-top: 0; }
 .facts div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.75rem; padding: 0.7rem 0.2rem; border-top: 1px solid var(--line); font-size: 14px; }
 .facts dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding-top: 0.2rem; }
 .prose { display: grid; gap: 1.2rem; max-width: 58ch; font-family: var(--serif); font-weight: 300; font-size: clamp(1.15rem, 1.9vw, 1.55rem); line-height: 1.4; }
@@ -196,7 +203,7 @@ main { position: relative; z-index: 2; }
 @media (min-width: 800px) { .disciplines { grid-template-columns: 1fr 1fr; } }
 
 /* Trophies */
-.headline { display: grid; gap: 1.5rem; margin-bottom: clamp(2.5rem, 6vw, 4.5rem); }
+.headline { display: grid; gap: 1.5rem; margin-bottom: clamp(0.75rem, 1.6vw, 1.25rem); padding: clamp(1.1rem, 3vw, 2.5rem); text-shadow: none; max-width: 1180px; }
 .headline strong { display: block; font-family: var(--serif); font-variation-settings: 'opsz' 144; font-weight: 300; font-size: clamp(3.4rem, 9vw, 7.5rem); line-height: 0.95; letter-spacing: -0.05em; }
 .headline span { display: block; margin-top: 0.6rem; max-width: 26ch; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 @media (min-width: 800px) { .headline { grid-template-columns: repeat(3, 1fr); } }

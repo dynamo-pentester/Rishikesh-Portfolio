@@ -15,7 +15,7 @@ export default function Trophies() {
         <h2 className="title-lg">Numbers, <em>not adjectives</em></h2>
       </header>
 
-      <div className="headline" data-reveal>
+      <div className="sheet headline" data-reveal>
         {HEADLINE.map((h) => (
           <div key={h.value}><strong>{h.value}</strong><span>{h.label}</span></div>
         ))}

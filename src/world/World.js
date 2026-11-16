@@ -33,20 +33,49 @@ const terrainVert = /* glsl */ `
     gl_Position = projectionMatrix * mv;
   }`;
 
+const noiseGlsl = /* glsl */ `
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float vn(vec2 p) {
+    vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+  }`;
+
+// Watercolour ground: spring meadow by height, a sand line at the shore, still water with a light shimmer.
 const terrainFrag = /* glsl */ `
-  uniform vec3 uPaper; uniform vec3 uInk; uniform vec2 uFog; uniform float uSea;
+  uniform vec3 uLandLo; uniform vec3 uLandHi; uniform vec3 uSand; uniform vec3 uWater; uniform vec3 uInk; uniform vec3 uSkyLow;
+  uniform vec2 uFog; uniform float uSea; uniform float uTime;
   varying float vH; varying float vDist; varying vec2 vXZ;
+  ${noiseGlsl}
   float lineAt(float v) {
     float fw = fwidth(v);
     float d = abs(fract(v - 0.5) - 0.5) / max(fw, 1e-5);
     return (1.0 - smoothstep(0.0, 1.3, d)) * clamp(1.5 - fw * 2.6, 0.0, 1.0);
   }
   void main() {
-    float a = max(lineAt(vH / 1.6) * 0.30, lineAt(vH / 8.0) * 0.72);
-    float water = 1.0 - step(uSea + 0.02, vH);
-    a = mix(a, lineAt(vXZ.y / 3.4) * 0.11, water);
-    float fog = smoothstep(uFog.x, uFog.y, vDist);
-    gl_FragColor = vec4(mix(uPaper, uInk, a * (1.0 - fog)), 1.0);
+    float blot = vn(vXZ * 0.05) * 0.6 + vn(vXZ * 0.19) * 0.4;
+    vec3 land = mix(uLandLo, uLandHi, clamp(smoothstep(uSea, 15.0, vH) * 0.9 + (blot - 0.5) * 0.55, 0.0, 1.0));
+    land = mix(uSand, land, smoothstep(uSea + 0.05, uSea + 1.2, vH));
+    land = mix(land, uInk, max(lineAt(vH / 1.6) * 0.13, lineAt(vH / 8.0) * 0.34));
+    float ripple = sin(vXZ.x * 0.9 + uTime * 0.8 + sin(vXZ.y * 0.7) * 2.0) * sin(vXZ.y * 1.7 - uTime * 0.5);
+    vec3 water = mix(uWater, uSkyLow, 0.3 * blot) + smoothstep(0.72, 1.0, ripple) * 0.14;
+    vec3 col = mix(land, water, 1.0 - step(uSea + 0.02, vH));
+    gl_FragColor = vec4(mix(col, uSkyLow, smoothstep(uFog.x, uFog.y, vDist)), 1.0);
+  }`;
+
+// The sky is one screen-filling sheet: a soft gradient, slow clouds, and stars after dark.
+const skyVert = /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 1.0, 1.0); }`;
+const skyFrag = /* glsl */ `
+  uniform vec3 uSkyTop; uniform vec3 uSkyLow; uniform vec3 uCloud; uniform float uTime; uniform float uAspect; uniform float uStars;
+  varying vec2 vUv;
+  ${noiseGlsl}
+  void main() {
+    vec3 c = mix(uSkyLow, uSkyTop, smoothstep(0.3, 1.0, vUv.y));
+    vec2 p = vec2(vUv.x * uAspect * 2.4 + uTime * 0.01, vUv.y * 6.0);
+    float n = vn(p) * 0.55 + vn(p * 2.1 + 7.0) * 0.3 + vn(p * 4.3 + 3.0) * 0.15;
+    c = mix(c, uCloud, smoothstep(0.5, 0.74, n) * smoothstep(0.4, 0.75, vUv.y) * 0.9);
+    vec2 g = floor(vUv * vec2(uAspect, 1.0) * 150.0);
+    c += step(0.993, hash(g)) * uStars * smoothstep(0.45, 0.9, vUv.y) * (0.55 + 0.45 * sin(uTime * 2.0 + hash(g + 1.0) * 6.28));
+    gl_FragColor = vec4(c, 1.0);
   }`;
 
 const fogLineVert = /* glsl */ `
@@ -65,11 +94,11 @@ const blossomVert = /* glsl */ `
     gl_Position = projectionMatrix * mv;
   }`;
 const blossomFrag = /* glsl */ `
-  uniform vec3 uPaper; uniform vec3 uAccent; uniform vec2 uFog; varying float vDist; varying float vTone;
+  uniform vec3 uPaper; uniform vec3 uSkyLow; uniform vec3 uAccent; uniform vec2 uFog; varying float vDist; varying float vTone;
   void main() {
     if (length(gl_PointCoord - 0.5) > 0.5) discard;
     vec3 c = mix(uAccent, uPaper, vTone * 0.7);
-    gl_FragColor = vec4(mix(c, uPaper, smoothstep(uFog.x, uFog.y, vDist) * 0.9), 1.0);
+    gl_FragColor = vec4(mix(c, uSkyLow, smoothstep(uFog.x, uFog.y, vDist) * 0.9), 1.0);
   }`;
 
 // Petals live entirely on the GPU: a box of points that drifts with the wind and wraps around the camera.
@@ -147,7 +176,9 @@ export class World {
       vertexShader: terrainVert, fragmentShader: terrainFrag,
       uniforms: {
         uPaper: { value: new THREE.Color() }, uInk: { value: new THREE.Color() },
-        uFog: { value: this.cam.fog }, uSea: { value: SEA },
+        uLandLo: { value: new THREE.Color() }, uLandHi: { value: new THREE.Color() }, uSand: { value: new THREE.Color() },
+        uWater: { value: new THREE.Color() }, uSkyLow: { value: new THREE.Color() },
+        uFog: { value: this.cam.fog }, uSea: { value: SEA }, uTime: { value: 0 },
       },
     });
     this.scene.add(new THREE.Mesh(geo, this.terrainMat));
@@ -155,6 +186,13 @@ export class World {
 
   // The sun (or moon) — a flat disc traced from points, hung far to the north.
   buildSky() {
+    this.skyMat = new THREE.ShaderMaterial({
+      vertexShader: skyVert, fragmentShader: skyFrag, depthTest: false, depthWrite: false,
+      uniforms: { uSkyTop: { value: new THREE.Color() }, uSkyLow: this.terrainMat.uniforms.uSkyLow, uCloud: { value: new THREE.Color() }, uTime: { value: 0 }, uAspect: { value: 1 }, uStars: { value: 0 } },
+    });
+    const sky = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.skyMat);
+    sky.frustumCulled = false; sky.renderOrder = -10;
+    this.scene.add(sky);
     const shape = new THREE.Shape(Array.from({ length: 72 }, (_, i) => new THREE.Vector2(Math.cos((i / 72) * 6.2832) * 46, Math.sin((i / 72) * 6.2832) * 46)));
     this.sunMat = new THREE.MeshBasicMaterial();
     this.sun = new THREE.Mesh(new THREE.ShapeGeometry(shape, 1), this.sunMat);
@@ -200,13 +238,13 @@ export class World {
     }
     const lg = new THREE.BufferGeometry();
     lg.setAttribute('position', new THREE.Float32BufferAttribute(segs, 3));
-    this.treeMat = new THREE.ShaderMaterial({ vertexShader: fogLineVert, fragmentShader: fogLineFrag, uniforms: { uPaper: this.terrainMat.uniforms.uPaper, uInk: this.terrainMat.uniforms.uInk, uFog: { value: this.cam.fog } } });
+    this.treeMat = new THREE.ShaderMaterial({ vertexShader: fogLineVert, fragmentShader: fogLineFrag, uniforms: { uPaper: this.terrainMat.uniforms.uSkyLow, uInk: { value: new THREE.Color() }, uFog: { value: this.cam.fog } } });
     this.scene.add(new THREE.LineSegments(lg, this.treeMat));
     const pg = new THREE.BufferGeometry();
     pg.setAttribute('position', new THREE.Float32BufferAttribute(dots, 3));
     pg.setAttribute('aSize', new THREE.Float32BufferAttribute(sizes, 1));
     pg.setAttribute('aTone', new THREE.Float32BufferAttribute(tones, 1));
-    this.blossomMat = new THREE.ShaderMaterial({ vertexShader: blossomVert, fragmentShader: blossomFrag, uniforms: { uPaper: this.terrainMat.uniforms.uPaper, uAccent: { value: new THREE.Color() }, uFog: { value: this.cam.fog }, uScale: { value: 600 } } });
+    this.blossomMat = new THREE.ShaderMaterial({ vertexShader: blossomVert, fragmentShader: blossomFrag, uniforms: { uPaper: this.terrainMat.uniforms.uPaper, uSkyLow: this.terrainMat.uniforms.uSkyLow, uAccent: { value: new THREE.Color() }, uFog: { value: this.cam.fog }, uScale: { value: 600 } } });
     this.scene.add(new THREE.Points(pg, this.blossomMat));
   }
 
@@ -276,6 +314,12 @@ export class World {
     this.blossomMat.uniforms.uAccent.value.copy(c('--accent'));
     this.sunMat.color.copy(c('--sun'));
     this.sunMatLine.color.copy(c('--sun'));
+    const u = this.terrainMat.uniforms;
+    u.uLandLo.value.copy(c('--land-lo')); u.uLandHi.value.copy(c('--land-hi')); u.uSand.value.copy(c('--sand'));
+    u.uWater.value.copy(c('--water')); u.uSkyLow.value.copy(c('--sky-low'));
+    this.skyMat.uniforms.uSkyTop.value.copy(c('--sky-top')); this.skyMat.uniforms.uCloud.value.copy(c('--cloud'));
+    this.skyMat.uniforms.uStars.value = document.documentElement.dataset.theme === 'night' ? 1 : 0;
+    this.treeMat.uniforms.uInk.value.copy(c('--bark'));
     this.renderer.setClearColor(paper, 1);
   }
 
@@ -289,6 +333,7 @@ export class World {
     if (w > 900) this.camera.setViewOffset(w, h, -w * 0.13, 0, w, h); else this.camera.clearViewOffset();
     this.camera.updateProjectionMatrix();
     const scale = this.renderer.domElement.height / (2 * Math.tan((this.camera.fov * Math.PI) / 360));
+    this.skyMat.uniforms.uAspect.value = w / h;
     this.blossomMat.uniforms.uScale.value = scale;
     this.petalMat.uniforms.uScale.value = scale;
   }
@@ -355,6 +400,8 @@ export class World {
     }
     store.labels = labels;
     this.petalMat.uniforms.uTime.value = this.reduced ? 0 : t;
+    this.terrainMat.uniforms.uTime.value = this.reduced ? 0 : t;
+    this.skyMat.uniforms.uTime.value = this.reduced ? 0 : t;
     this.petalMat.uniforms.uCam.value.copy(this.camera.position);
     store.ready = true;
     this.renderer.render(this.scene, this.camera);
@@ -367,7 +414,7 @@ export class World {
     window.removeEventListener('pointermove', this.onPointer);
     document.removeEventListener('visibilitychange', this.onVis);
     this.scene.traverse((o) => { o.geometry?.dispose(); });
-    [this.terrainMat, this.inkMat, this.accentMat, this.sunMat, this.sunMatLine, this.treeMat, this.blossomMat, this.petalMat].forEach((m) => m.dispose());
+    [this.terrainMat, this.inkMat, this.accentMat, this.sunMat, this.sunMatLine, this.treeMat, this.blossomMat, this.petalMat, this.skyMat].forEach((m) => m.dispose());
     this.renderer.dispose();
   }
 }

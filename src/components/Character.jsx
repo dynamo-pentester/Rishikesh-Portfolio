@@ -1,4 +1,4 @@
-import { profile, skillTree, aboutImage } from '../data/portfolio';
+import { profile, skillTree } from '../data/portfolio';
 
 export default function Character() {
   return (
@@ -11,7 +11,7 @@ export default function Character() {
 
       <div className="character">
         <aside className="sheet card" data-reveal>
-          <img className="portrait" src={aboutImage} alt="Portrait of Rishikesh R" loading="lazy" />
+          <figure className="figure"><img className="portrait" src="/assets/me-cutout.webp" alt="Portrait of Rishikesh R" loading="lazy" /></figure>
           <dl className="facts">
             <div><dt>Class</dt><dd>{profile.role}</dd></div>
             <div><dt>Origin</dt><dd>{profile.location}</dd></div>

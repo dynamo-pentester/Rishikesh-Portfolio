@@ -12,7 +12,7 @@ function vnoise(x, y) {
   return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
 }
 
-export const SEA = -6;
+export const SEA = -3.2;
 
 export function heightAt(x, z) {
   const s = 0.013;
